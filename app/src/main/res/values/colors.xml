@@ -10,6 +10,7 @@
     <!-- 색상 팔레트 -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="lighter_gray">#FFFBFE</color>
     <color name="light_gray">#E0E0E0</color>
     <color name="gray">#9E9E9E</color>
     <color name="dark_gray">#616161</color>

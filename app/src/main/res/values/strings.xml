@@ -16,8 +16,14 @@
     <string name="str_register_btn_register">회원가입</string>
     <string name="str_register_txt_account">이미 계정이 있으신가요?</string>
     <string name="str_register_txt_login"><u>로그인</u></string>
+    <!--fragment_home-->
+    <string name="str_home_toolbar_title">중고거래</string>
+    <string name="str_home_fab_post">게시글 작성</string>
     <!--menu_main_bottombar_nav-->
     <string name="str_main_bottombar_home">홈</string>
     <string name="str_main_bottombar_chat">채팅</string>
     <string name="str_main_bottombar_myinfo">내 정보</string>
+    <!--menu_home_toolbar_item-->
+    <string name="str_home_toolbar_search">검색</string>
+    <string name="str_home_toolbar_filter">필터</string>
 </resources>

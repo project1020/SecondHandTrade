@@ -5,12 +5,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.secondhand.trade.databinding.ActivityMainBinding
 
 class ActivityMain : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    // 뒤로가기 버튼 두 번 클릭 콜백
     private var backPressedTime: Long = 0
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -22,11 +21,12 @@ class ActivityMain : AppCompatActivity() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        this.onBackPressedDispatcher.addCallback(this, callback)
+        this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
 
         changeFragment(FragmentHome())
         binding.bottombarMain.onItemSelected = ::onNavigationItemSelected
@@ -34,10 +34,13 @@ class ActivityMain : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!Preferences.isAutoLogin)
-            Firebase.auth.signOut()
+        // 자동 로그인 상태가 아닐 시 종료하면 로그아웃
+        if (!Preferences.isAutoLogin) {
+            FunComp.logout(this)
+        }
     }
 
+    // 하단바 클릭 이벤트
     private fun onNavigationItemSelected(position: Int) {
         changeFragment(
             when (position) {
@@ -48,6 +51,7 @@ class ActivityMain : AppCompatActivity() {
         )
     }
 
+    // fragment 전환 함수
     private fun changeFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(binding.frameMain.id, fragment).commit()
     }
