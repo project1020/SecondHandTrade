@@ -11,7 +11,7 @@
         android:layout_marginTop="48dp"
         android:adjustViewBounds="true"
         android:padding="10dp"
-        android:background="@drawable/drawable_myinfo_imagaeview"
+        android:background="@drawable/drawable_myinfo_imageview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

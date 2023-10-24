@@ -1,11 +1,18 @@
 package com.secondhand.trade
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -13,7 +20,13 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.secondhand.trade.databinding.ActivityRegisterBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class ActivityRegister : AppCompatActivity() {
     private val binding by lazy { ActivityRegisterBinding.inflate(layoutInflater) }
@@ -21,6 +34,7 @@ class ActivityRegister : AppCompatActivity() {
     private val inputEmail by lazy { binding.inputEmail }
     private val inputPassword by lazy { binding.inputPassword }
     private val inputPasswordConfirm by lazy { binding.inputPasswordConfirm }
+    private lateinit var profileImageUri: Uri
     private val db = FirebaseFirestore.getInstance() // 파이어베이스 Firestore 데이터베이스
     // 뒤로가기 버튼 두 번 클릭 콜백
     private var backPressedTime: Long = 0
@@ -39,6 +53,9 @@ class ActivityRegister : AppCompatActivity() {
         setContentView(binding.root)
 
         this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
+
+        initProfile()
+        initBottomSheetDialog()
 
         // edittext 입력시 inputLayout error 삭제
         binding.editNickname.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
@@ -67,6 +84,58 @@ class ActivityRegister : AppCompatActivity() {
         }
     }
 
+    private fun initProfile() {
+        getProfileFromStorage { imageList ->
+            if (imageList.isNotEmpty()) {
+                profileImageUri = imageList.random()
+                Glide.with(this).load(profileImageUri).into(binding.imgProfile)
+            } else {
+                Glide.with(this).load(R.drawable.sangsang_bugi).into(binding.imgProfile)
+            }
+        }
+    }
+
+    private fun initBottomSheetDialog() {
+        val parent: ViewGroup? = null
+        val bottomSheetView = layoutInflater.inflate(R.layout.bottomsheet_register, parent, false)
+        val bottomSheetDialog = BottomSheetDialog(this)
+        val adapterRegister = AdapterRegister(this)
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        bottomSheetView.findViewById<RecyclerView>(R.id.recyclerRegister).apply {
+            layoutManager = LinearLayoutManager(this@ActivityRegister, LinearLayoutManager.HORIZONTAL, false)
+            addItemDecoration(RecyclerViewItemDecorator(20))
+            setHasFixedSize(true)
+            adapter = adapterRegister
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                withContext(Dispatchers.Main) {
+                    getProfileFromStorage { imageUris ->
+                        adapterRegister.itemList = imageUris.map { DataRegister(it.toString()) }.toMutableList()
+                        adapterRegister.notifyDataSetChanged()
+                    }
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ActivityRegister, "네트워크 상태를 확인해 주세요.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        binding.imgProfile.setOnClickListener {
+            bottomSheetDialog.show()
+        }
+
+        adapterRegister.setOnItemClickListener(object : AdapterRegister.OnItemClickListener {
+            override fun onClick(v: View, position: Int) {
+                Glide.with(this@ActivityRegister).load(adapterRegister.itemList[position].image).into(binding.imgProfile)
+                bottomSheetDialog.dismiss()
+            }
+        })
+    }
+
     // 회원가입 시도 함수
     private fun doRegister(nickname: String, email: String, password: String) {
         // isNickNameUnique 함수 호출
@@ -74,7 +143,7 @@ class ActivityRegister : AppCompatActivity() {
             if (isUnique) { // 닉네임이 존재할 때
                 Firebase.auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) { // 회원가입 성공
-                        setNickname(Firebase.auth.currentUser?.uid ?: "", nickname, { // setNickname 함수 호출
+                        setNickAndProfile(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri.toString(), { // setNickname 함수 호출
                             Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
                         }, { // 닉네임 설정 실패로 회원가입 실패
@@ -119,9 +188,9 @@ class ActivityRegister : AppCompatActivity() {
         }
     }
 
-    // 닉네임 설정 함수
-    private fun setNickname(userId: String, nickname: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        db.collection("nicknames").document(nickname).set(mapOf("userId" to userId)).addOnSuccessListener {
+    // 닉네임 및 프로필 이미지 설정 함수
+    private fun setNickAndProfile(userId: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        db.collection("nicknames").document(nickname).set(mapOf("userId" to userId, "profileImage" to profileImage)).addOnSuccessListener {
             val profileUpdate = UserProfileChangeRequest.Builder()
                 .setDisplayName(nickname)
                 .build()
@@ -135,6 +204,26 @@ class ActivityRegister : AppCompatActivity() {
             }
         }.addOnFailureListener {
             onFailure()
+        }
+    }
+
+    // Firebase storage에서 프로필 이미지 목록 불러오는 함수
+    private fun getProfileFromStorage(callback: (List<Uri>) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference.child("profile_image")
+        val imageList = mutableListOf<Uri>()
+
+        storageRef.listAll().addOnSuccessListener { listResult ->
+            for (file in listResult.items) {
+                file.downloadUrl.addOnSuccessListener { uri ->
+                    imageList.add(uri)
+
+                    if (imageList.size == listResult.items.size) {
+                        callback(imageList)
+                    }
+                }
+            }
+        }.addOnFailureListener {
+            callback(emptyList())
         }
     }
 }

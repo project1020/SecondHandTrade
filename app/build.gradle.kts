@@ -58,6 +58,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx:24.9.0")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
 
     // 뷰모델
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
