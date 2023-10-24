@@ -40,31 +40,27 @@ class FragmentMyInfo : Fragment() {
 
     // 프로필 표시 함수
     private fun initProfile() {
-        // 프로필 사진 표시
-        Glide.with(mainActivity).load(R.drawable.sangsang_bugi).into(binding.imgProfile)
-        // 닉네임, 이메일 표시
         Firebase.auth.currentUser?.let { user ->
             val userId = user.uid
             getNickname(userId) {
-                binding.txtNickname.text = it ?: ""
+                Glide.with(mainActivity).load(it.second).into(binding.imgProfile)
+                binding.txtNickname.text =  it.first
+                binding.txtEmail.text = user.email
             }
-            binding.txtEmail.text = user.email ?: ""
         }
     }
 
     // 로그인 되어있는 계정의 닉네임을 Firestore 데이터베이스에서 가져오는 함수
-    private fun getNickname(userId: String, onComplete: (String?) -> Unit) {
-        db.collection("nicknames")
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val document = task.result?.documents?.firstOrNull()
-                    val nickname = document?.id
-                    onComplete(nickname)
-                } else {
-                    onComplete(null)
-                }
+    private fun getNickname(userId: String, onComplete: (Pair<String?, String?>) -> Unit) {
+        db.collection("nicknames").whereEqualTo("userId", userId).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result?.documents?.firstOrNull()
+                val nickname = document?.id
+                val profileImage = document?.getString("profileImage")
+                onComplete(Pair(nickname, profileImage))
+            } else {
+                onComplete(Pair(null, null))
             }
+        }
     }
 }

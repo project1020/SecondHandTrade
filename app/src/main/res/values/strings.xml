@@ -26,4 +26,6 @@
     <!--menu_home_toolbar_item-->
     <string name="str_home_toolbar_search">검색</string>
     <string name="str_home_toolbar_filter">필터</string>
+    <!--bottomsheet_register-->
+    <string name="str_register_text_choose">프로필 캐릭터 선택</string>
 </resources>
