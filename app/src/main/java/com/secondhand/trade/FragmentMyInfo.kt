@@ -52,11 +52,10 @@ class FragmentMyInfo : Fragment() {
 
     // 로그인 되어있는 계정의 닉네임을 Firestore 데이터베이스에서 가져오는 함수
     private fun getNickname(userId: String, onComplete: (Pair<String?, String?>) -> Unit) {
-        db.collection("nicknames").whereEqualTo("userId", userId).get().addOnCompleteListener { task ->
+        db.collection("users").document(userId).get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val document = task.result?.documents?.firstOrNull()
-                val nickname = document?.id
-                val profileImage = document?.getString("profileImage")
+                val nickname = task.result.getString("nickname")
+                val profileImage = task.result.getString("profileImage")
                 onComplete(Pair(nickname, profileImage))
             } else {
                 onComplete(Pair(null, null))
