@@ -14,19 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.secondhand.trade.databinding.ActivityRegisterBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 
 class ActivityRegister : AppCompatActivity() {
     private val binding by lazy { ActivityRegisterBinding.inflate(layoutInflater) }
@@ -34,7 +27,7 @@ class ActivityRegister : AppCompatActivity() {
     private val inputEmail by lazy { binding.inputEmail }
     private val inputPassword by lazy { binding.inputPassword }
     private val inputPasswordConfirm by lazy { binding.inputPasswordConfirm }
-    private lateinit var profileImageUri: Uri
+    private lateinit var profileImageUri: String
     private val db = FirebaseFirestore.getInstance() // 파이어베이스 Firestore 데이터베이스
     // 뒤로가기 버튼 두 번 클릭 콜백
     private var backPressedTime: Long = 0
@@ -54,14 +47,8 @@ class ActivityRegister : AppCompatActivity() {
 
         this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
 
-        initProfile()
-        initBottomSheetDialog()
-
-        // edittext 입력시 inputLayout error 삭제
-        binding.editNickname.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
-        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputEmail.error = null })
-        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPassword.error = null })
-        binding.editPasswordConfirm.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPasswordConfirm.error = null })
+        setTextWatchers()
+        setProfileImage()
 
         // 회원가입 버튼 클릭 이벤트
         binding.btnRegister.setOnClickListener {
@@ -84,18 +71,17 @@ class ActivityRegister : AppCompatActivity() {
         }
     }
 
-    private fun initProfile() {
-        getProfileFromStorage { imageList ->
-            if (imageList.isNotEmpty()) {
-                profileImageUri = imageList.random()
-                Glide.with(this).load(profileImageUri).into(binding.imgProfile)
-            } else {
-                Glide.with(this).load(R.drawable.sangsang_bugi).into(binding.imgProfile)
-            }
-        }
+    // inputLayout 입력 변화 감지 함수
+    private fun setTextWatchers() {
+        // edittext 입력시 inputLayout error 삭제
+        binding.editNickname.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
+        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputEmail.error = null })
+        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPassword.error = null })
+        binding.editPasswordConfirm.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPasswordConfirm.error = null })
     }
 
-    private fun initBottomSheetDialog() {
+    // 프로필 이미지 설정 함수
+    private fun setProfileImage() {
         val parent: ViewGroup? = null
         val bottomSheetView = layoutInflater.inflate(R.layout.bottomsheet_register, parent, false)
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -108,42 +94,63 @@ class ActivityRegister : AppCompatActivity() {
             setHasFixedSize(true)
             adapter = adapterRegister
         }
+        
+        getProfileFromStorage { imageList ->
+            // 가져온 이미지 목록을 adapter에 추가
+            adapterRegister.itemList = imageList.map { DataRegister(it.toString()) }.toMutableList()
+            adapterRegister.notifyDataSetChanged()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                withContext(Dispatchers.Main) {
-                    getProfileFromStorage { imageUris ->
-                        adapterRegister.itemList = imageUris.map { DataRegister(it.toString()) }.toMutableList()
-                        adapterRegister.notifyDataSetChanged()
-                    }
-                }
-            } catch (e: IOException) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ActivityRegister, "네트워크 상태를 확인해 주세요.", Toast.LENGTH_SHORT).show()
-                }
+            // 이미지 목록 중 랜덤으로 하나 선택해서 프로필 이미지로 설정
+            if (imageList.isNotEmpty()) {
+                profileImageUri = imageList.random().toString()
+                Glide.with(this).load(profileImageUri).into(binding.imgProfile)
             }
         }
 
+        // 프로필 이미지 클릭
         binding.imgProfile.setOnClickListener {
             bottomSheetDialog.show()
         }
 
+        // recyclerview 아이템 클릭
         adapterRegister.setOnItemClickListener(object : AdapterRegister.OnItemClickListener {
             override fun onClick(v: View, position: Int) {
+                // 프로필 이미지 변경
                 Glide.with(this@ActivityRegister).load(adapterRegister.itemList[position].image).into(binding.imgProfile)
+                profileImageUri = adapterRegister.itemList[position].image
                 bottomSheetDialog.dismiss()
             }
         })
     }
 
+    // Firebase storage에서 프로필 이미지 목록 불러오는 함수
+    private fun getProfileFromStorage(callback: (List<Uri>) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference.child("profile_image")
+        val imageList = mutableListOf<Uri>()
+
+        storageRef.listAll().addOnSuccessListener { listResult ->
+            for (file in listResult.items) {
+                file.downloadUrl.addOnSuccessListener { uri ->
+                    imageList.add(uri)
+
+                    if (imageList.size == listResult.items.size) {
+                        callback(imageList)
+                    }
+                }
+            }
+        }.addOnFailureListener {
+            callback(emptyList())
+        }
+    }
+
     // 회원가입 시도 함수
     private fun doRegister(nickname: String, email: String, password: String) {
         // isNickNameUnique 함수 호출
-        isNicknameUnique(nickname) { isUnique ->
-            if (isUnique) { // 닉네임이 존재할 때
+        isNicknameAvailable(nickname) { isAvailable ->
+            if (isAvailable) { // 닉네임이 존재하지 않을 때
                 Firebase.auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) { // 회원가입 성공
-                        setNickAndProfile(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri.toString(), { // setNickname 함수 호출
+                        registerUsers(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri, { // setNickname 함수 호출
                             Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
                         }, { // 닉네임 설정 실패로 회원가입 실패
@@ -170,60 +177,27 @@ class ActivityRegister : AppCompatActivity() {
                         }
                     }
                 }
-            } else { // 닉네임이 존재하지 않을 때
+            } else { // 닉네임이 존재할 때
                 inputNickname.error = "이미 사용 중인 닉네임입니다."
             }
         }
     }
 
     // 닉네임 중복 확인 함수
-    private fun isNicknameUnique(nickname: String, onComplete: (Boolean) -> Unit) {
-        db.collection("nicknames").document(nickname).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) { // 닉네임이 존재함
-                val document = task.result
-                onComplete(!document.exists())
-            } else { // 닉네임이 존재하지 않음
-                onComplete(false)
-            }
+    private fun isNicknameAvailable(nickname: String, onComplete: (Boolean) -> Unit) {
+        db.collection("users").whereEqualTo("nickname", nickname).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) onComplete(task.result?.isEmpty ?: true) else onComplete(false)
         }
     }
 
-    // 닉네임 및 프로필 이미지 설정 함수
-    private fun setNickAndProfile(userId: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        db.collection("nicknames").document(nickname).set(mapOf("userId" to userId, "profileImage" to profileImage)).addOnSuccessListener {
-            val profileUpdate = UserProfileChangeRequest.Builder()
-                .setDisplayName(nickname)
-                .build()
-
-            FirebaseAuth.getInstance().currentUser?.updateProfile(profileUpdate)?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onSuccess()
-                } else {
-                    onFailure()
-                }
+    // firestore에 닉네임 및 프로필 이미지 등록 함수
+    private fun registerUsers(userId: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        db.collection("users").document(userId).set(mapOf("nickname" to nickname, "profileImage" to profileImage)).addOnCompleteListener {task ->
+            if (task.isSuccessful) {
+                onSuccess()
+            } else {
+                onFailure()
             }
-        }.addOnFailureListener {
-            onFailure()
-        }
-    }
-
-    // Firebase storage에서 프로필 이미지 목록 불러오는 함수
-    private fun getProfileFromStorage(callback: (List<Uri>) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("profile_image")
-        val imageList = mutableListOf<Uri>()
-
-        storageRef.listAll().addOnSuccessListener { listResult ->
-            for (file in listResult.items) {
-                file.downloadUrl.addOnSuccessListener { uri ->
-                    imageList.add(uri)
-
-                    if (imageList.size == listResult.items.size) {
-                        callback(imageList)
-                    }
-                }
-            }
-        }.addOnFailureListener {
-            callback(emptyList())
         }
     }
 }
