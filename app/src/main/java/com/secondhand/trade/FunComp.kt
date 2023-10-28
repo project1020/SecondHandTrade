@@ -16,6 +16,7 @@ class FunComp {
                 FirebaseFirestore.getInstance().collection("users").document(userId).update("isLoggedIn", false)
                     .addOnSuccessListener { // isLoggedIn 상태 변경 성공
                         Firebase.auth.signOut()
+                        Preferences.isAutoLogin = false
                         onLogoutSuccess?.invoke()
                     }
                     .addOnFailureListener { // isLoggedIn 상태 변경 실패

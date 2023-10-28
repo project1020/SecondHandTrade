@@ -7,7 +7,7 @@
     app:behavior_draggable="true"
     app:behavior_hideable="true">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txtChoose"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
