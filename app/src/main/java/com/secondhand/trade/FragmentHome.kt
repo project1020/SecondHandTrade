@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -54,13 +55,19 @@ class FragmentHome : Fragment() {
                          /*
                               - 가격 조건
                                 ㄴ RangeSlider 사용
-                                   ㄴ 가격 범위 (0원 ~ 1억원)
-                                ㄴ slider 아래 edittext로 수동 입력
+                                   ㄴ 가격 범위 (0원 ~ 100만원)
+                                ㄴ Slider 아래 TextView로 표시
 
-                              - 판매된 상품 제외
-                                ㄴ MaterialButtonToggleGroup 사용
+                              - 판매 여부
+                                ㄴ ToggleButton 사용
                                 ㄴ DB에서 판매 중, 판매 완료 구분
                          */
+                         CustomDialog(
+                             onApply = { minValue, maxValue, forSale, soldOut ->
+                                 Toast.makeText(mainActivity, "min=$minValue, max=$maxValue, forSale=$forSale, soldOut=$soldOut", Toast.LENGTH_SHORT).show()
+                             },
+                             onCancel = {}
+                         ).show(childFragmentManager, "CustomDialog")
                      }
                  }
                 return true

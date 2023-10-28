@@ -151,8 +151,12 @@ class ActivityRegister : AppCompatActivity() {
                 Firebase.auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) { // 회원가입 성공
                         registerUsers(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri, { // setNickname 함수 호출
-                            Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
+                            FunComp.logout(this,
+                                onLogoutSuccess = {
+                                    Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
+                                }
+                            )
                         }, { // 닉네임 설정 실패로 회원가입 실패
                             Toast.makeText(this, "회원가입에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         })

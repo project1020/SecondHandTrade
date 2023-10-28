@@ -4,7 +4,7 @@
     <color name="colorPrimary">@color/pink</color>  <!-- 메인 색상 -->
     <color name="colorOnPrimary">@color/white</color> <!-- Primary와 상반되는 색상 -->
     <color name="colorPrimaryVariant">@color/dark_pink</color> <!-- Primary 강조 색상 -->
-    <color name="colorSecondary">@color/light_pink</color> <!-- 서브 색상 -->
+    <color name="colorSecondary">@color/lighter_pink</color> <!-- 서브 색상 -->
     <color name="colorOnSecondary">@color/white</color> <!-- OnSecondary와 상반되는 색상 -->
 
     <!-- 색상 팔레트 -->
@@ -14,6 +14,7 @@
     <color name="light_gray">#E0E0E0</color>
     <color name="gray">#9E9E9E</color>
     <color name="dark_gray">#616161</color>
+    <color name="lighter_pink">#F8BBD0</color>
     <color name="light_pink">#F06292</color>
     <color name="pink">#E91E63</color>
     <color name="dark_pink">#C2185B</color>
