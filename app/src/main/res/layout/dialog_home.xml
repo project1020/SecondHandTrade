@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/drawable_home_dialog"
+    android:padding="24dp">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtPricerange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/nanum_square_round_extra_bold"
+        android:text="@string/str_home_text_price_range"
+        android:textColor="@color/dark_gray"
+        android:textSize="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/sliderPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stepSize="1000.0"
+        android:valueFrom="0.0"
+        android:valueTo="1000000.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPricerange"
+        app:values="@array/initial_slider_values" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtPriceMin"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/drawable_home_textview"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:gravity="end|center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/dark_gray"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/txtPriceMax"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sliderPrice" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtTilde"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:fontFamily="@font/nanum_square_round_extra_bold"
+        android:gravity="center"
+        android:text="~"
+        android:textColor="@color/gray"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/txtPriceMax"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtPriceMin"
+        app:layout_constraintTop_toBottomOf="@+id/sliderPrice" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtPriceMax"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/drawable_home_textview"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:gravity="end|center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/dark_gray"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtPriceMin"
+        app:layout_constraintTop_toBottomOf="@+id/sliderPrice" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txtSold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/nanum_square_round_extra_bold"
+        android:text="@string/str_home_text_sold"
+        android:textColor="@color/dark_gray"
+        android:textSize="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPriceMin" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/tgbtnForSale"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/drawable_home_togglebutton"
+        android:checked="true"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:stateListAnimator="@null"
+        android:textColor="@drawable/drawable_home_togglebutton_text"
+        android:textOff="@string/str_home_tgbtn_forsale"
+        android:textOn="@string/str_home_tgbtn_forsale"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/tgbtnSoldOut"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSold" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/tgbtnSoldOut"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/drawable_home_togglebutton"
+        android:checked="true"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:stateListAnimator="@null"
+        android:textColor="@drawable/drawable_home_togglebutton_text"
+        android:textOff="@string/str_home_tgbtn_soldout"
+        android:textOn="@string/str_home_tgbtn_soldout"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tgbtnForSale"
+        app:layout_constraintTop_toBottomOf="@+id/txtSold" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/drawable_home_button_outlined"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:stateListAnimator="@null"
+        android:text="@string/str_home_button_cancel"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnApply"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tgbtnForSale" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnApply"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/drawable_home_button_filled"
+        android:fontFamily="@font/nanum_square_round_bold"
+        android:stateListAnimator="@null"
+        android:text="@string/str_home_button_apply"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnCancel"
+        app:layout_constraintTop_toBottomOf="@+id/tgbtnSoldOut" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
