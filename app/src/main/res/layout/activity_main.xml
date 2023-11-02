@@ -16,16 +16,10 @@
 
     <me.ibrahimsn.lib.SmoothBottomBar
         android:id="@+id/bottombarMain"
+        style="@style/StyleSmoothBottomBar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        app:backgroundColor="@android:color/transparent"
-        app:iconSize="26dp"
-        app:iconTint="@color/dark_gray"
-        app:iconTintActive="@color/colorPrimary"
-        app:itemFontFamily="@font/nanum_square_round_bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_main_bottombar_nav"
-        app:textColor="@color/colorPrimary"
-        app:textSize="18sp" />
+        app:menu="@menu/menu_main_bottombar_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

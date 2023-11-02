@@ -24,15 +24,21 @@
     <!--fragment_home-->
     <string name="str_home_toolbar_title">중고거래</string>
     <string name="str_home_fab_post">게시글 작성</string>
+    <!--fragment_myinfo-->
+    <string name="str_myinfo_txt_email">이메일</string>
+    <string name="str_myinfo_btn_logout">로그아웃</string>
     <!--bottomsheet_register-->
     <string name="str_register_text_choose">프로필 이미지 선택</string>
     <!--dialog_home-->
-    <string name="str_home_text_price_range">가격</string>
-    <string name="str_home_text_sold">판매 여부</string>
+    <string name="str_home_txt_price_range">가격</string>
+    <string name="str_home_txt_forsale">판매 여부</string>
+    <string name="str_home_txt_tilde">~</string>
+    <string name="str_home_txt_warning">최댓값을 최솟값보다 높게 설정해 주세요.</string>
     <string name="str_home_tgbtn_forsale">판매 중</string>
     <string name="str_home_tgbtn_soldout">판매 완료</string>
-    <string name="str_home_button_cancel">취소</string>
-    <string name="str_home_button_apply">적용</string>
+    <string name="str_home_btn_cancel">취소</string>
+    <string name="str_home_btn_apply">적용</string>
+
 
     <!--menu-->
     <!--menu_main_bottombar_nav-->

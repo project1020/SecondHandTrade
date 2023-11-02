@@ -11,8 +11,8 @@
         android:layout_height="150dp"
         android:layout_marginTop="32dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/drawable_myinfo_imageview"
-        android:foreground="@drawable/drawable_register_image_add"
+        android:background="@drawable/drawable_myinfo_img"
+        android:foreground="@drawable/drawable_register_img_add"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputNickname"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text"
@@ -43,24 +42,17 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editNickname"
+                style="@style/StyleTextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/drawable_login_edittext"
                 android:drawableStart="@drawable/icon_nickname"
-                android:drawablePadding="16dp"
-                android:fontFamily="@font/nanum_square_round_bold"
                 android:hint="@string/str_register_edit_nickname"
-                android:inputType="text"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:textColorHint="@color/gray"
-                android:textSize="18dp" />
+                android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputEmail"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -73,24 +65,17 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
+                style="@style/StyleTextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/drawable_login_edittext"
                 android:drawableStart="@drawable/icon_email"
-                android:drawablePadding="16dp"
-                android:fontFamily="@font/nanum_square_round_bold"
                 android:hint="@string/str_register_edit_email"
-                android:inputType="textEmailAddress"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:textColorHint="@color/gray"
-                android:textSize="18dp" />
+                android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputPassword"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -103,24 +88,17 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPassword"
+                style="@style/StyleTextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/drawable_login_edittext"
                 android:drawableStart="@drawable/icon_password"
-                android:drawablePadding="16dp"
-                android:fontFamily="@font/nanum_square_round_bold"
                 android:hint="@string/str_register_edit_password"
-                android:inputType="textPassword"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:textColorHint="@color/gray"
-                android:textSize="18dp" />
+                android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputPasswordConfirm"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -133,32 +111,22 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPasswordConfirm"
+                style="@style/StyleTextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/drawable_login_edittext"
                 android:drawableStart="@drawable/icon_password"
-                android:drawablePadding="16dp"
-                android:fontFamily="@font/nanum_square_round_bold"
                 android:hint="@string/str_register_edit_password_confirm"
-                android:inputType="textPassword"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:textColorHint="@color/gray"
-                android:textSize="18dp" />
+                android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnRegister"
+            style="@style/StyleButton.Rounded"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/drawable_login_button"
-            android:fontFamily="@font/nanum_square_round_bold"
-            android:stateListAnimator="@null"
             android:text="@string/str_register_btn_register"
-            android:textColor="@color/white"
-            android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/inputPasswordConfirm" />
@@ -171,7 +139,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:layout_marginBottom="48dp"
-        android:fontFamily="@font/nanum_square_round_bold"
         android:text="@string/str_register_txt_account"
         android:textSize="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -183,7 +150,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="48dp"
-        android:fontFamily="@font/nanum_square_round_bold"
         android:text="@string/str_register_txt_login"
         android:textColor="@color/colorPrimary"
         android:textSize="14dp"

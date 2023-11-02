@@ -5,7 +5,7 @@
             <item>
                 <shape>
                     <stroke android:width="2dp" android:color="@color/gray" />
-                    <corners android:radius="10dp" />
+                    <corners android:radius="45dp" />
                     <solid android:color="@color/white" />
                 </shape>
             </item>
@@ -15,8 +15,8 @@
         <ripple android:color="?android:attr/colorControlHighlight">
             <item>
                 <shape>
-                    <corners android:radius="10dp" />
-                    <solid android:color="@color/colorSecondary" />
+                    <corners android:radius="45dp" />
+                    <solid android:color="@color/lighter_pink" />
                 </shape>
             </item>
         </ripple>
