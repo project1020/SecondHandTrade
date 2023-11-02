@@ -19,6 +19,7 @@ import com.secondhand.trade.databinding.FragmentHomeBinding
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
+//    private lateinit var homeAdapter: AdapterHome
     private lateinit var mainActivity: ActivityMain
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -51,40 +52,51 @@ class FragmentHome : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                  when (menuItem.itemId) {
                      R.id.menuFilter -> {
-                         // 필터 dialog 화면 띄우기
-                         /*
-                              - 가격 조건
-                                ㄴ RangeSlider 사용
-                                   ㄴ 가격 범위 (0원 ~ 100만원)
-                                ㄴ Slider 아래 TextView로 표시
-
-                              - 판매 여부
-                                ㄴ ToggleButton 사용
-                                ㄴ DB에서 판매 중, 판매 완료 구분
-                         */
-                         CustomDialog(
+                         // 필터 다이얼로그 띄우기
+                         DialogHome(
                              onApply = { minValue, maxValue, forSale, soldOut ->
-                                 Toast.makeText(mainActivity, "min=$minValue, max=$maxValue, forSale=$forSale, soldOut=$soldOut", Toast.LENGTH_SHORT).show()
+                                 Toast.makeText(mainActivity, "min=$minValue, max=$maxValue, forSale=$forSale, soldOut=$soldOut", Toast.LENGTH_SHORT).show() // 반환 값 출력
                              },
                              onCancel = {}
-                         ).show(childFragmentManager, "CustomDialog")
+                         ).show(childFragmentManager, "DialogHome")
                      }
                  }
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        // recyclerview 스크롤 리스너
-        binding.recyclerHome.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && fabHome.isExtended) { // 위로 스크롤
-                    fabHome.shrink() // FAB 축소
-                } else if (dy < 0 && !fabHome.isExtended) { // 아래로 스크롤
-                    fabHome.extend() // FAB 확장
-                }
-            }
-        })
+        initRecyclerview()
         return binding.root
+    }
+
+    private fun initRecyclerview() {
+//        homeAdapter = AdapterHome(mainActivity)
+//        homeAdapter.itemList.apply {
+//            add(DataHome(R.mipmap.ic_launcher, "제목1", "2023.10.04", 10000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목2", "2023.10.04", 100000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목3", "2023.10.03", 2000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목4", "2023.10.03", 30000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목5", "2023.10.03", 10000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목6", "2023.10.02", 50000))
+//            add(DataHome(R.mipmap.ic_launcher, "제목7", "2023.10.02", 100))
+//            add(DataHome(R.mipmap.ic_launcher, "제목8", "2023.10.02", 10000))
+//        }
+//        homeAdapter.notifyDataSetChanged()
+
+        binding.recyclerHome.apply {
+//            adapter = homeAdapter
+            addItemDecoration(RecyclerViewItemDecorator(5))
+            setHasFixedSize(true)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0 && fabHome.isExtended) { // 위로 스크롤
+                        fabHome.shrink() // FAB 축소
+                    } else if (dy < 0 && !fabHome.isExtended) { // 아래로 스크롤
+                        fabHome.extend() // FAB 확장
+                    }
+                }
+            })
+        }
     }
 }

@@ -4,8 +4,31 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.secondhand.trade.databinding.ActivityMainBinding
+
+class DialogHomeViewModel : ViewModel() {
+    // 최소 가격
+    private val _minValue = MutableLiveData<Int>(0) // 초기값 0
+    val minValue: LiveData<Int> get() = _minValue
+    // 최대 가격
+    private val _maxValue = MutableLiveData<Int?>() // null 허용을 위해 ?타입
+    val maxValue: LiveData<Int?> get() = _maxValue
+    // 판매 중
+    private val _forSale = MutableLiveData<Boolean>()
+    val forSale: LiveData<Boolean> get() = _forSale
+    // 판매 완료
+    private val _soldOut = MutableLiveData<Boolean>()
+    val soldOut: LiveData<Boolean> get() = _soldOut
+    // setter 함수
+    fun setMinValue(value: Int) { _minValue.value = value }
+    fun setMaxValue(value: Int?) { _maxValue.value = value }
+    fun setForSale(value: Boolean) { _forSale.value = value }
+    fun setSoldOut(value: Boolean) { _soldOut.value = value }
+}
 
 class ActivityMain : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
