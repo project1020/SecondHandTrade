@@ -23,7 +23,7 @@
     <string name="str_register_txt_login"><u>로그인</u></string>
     <!--fragment_home-->
     <string name="str_home_toolbar_title">중고거래</string>
-    <string name="str_home_fab_post">게시글 작성</string>
+    <string name="str_home_fab_post">물품 등록</string>
     <!--fragment_myinfo-->
     <string name="str_myinfo_txt_email">이메일</string>
     <string name="str_myinfo_btn_logout">로그아웃</string>
