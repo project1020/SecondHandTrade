@@ -8,7 +8,7 @@
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="fontFamily">@font/nanum_square_round_bold</item>
+        <item name="android:fontFamily">@font/nanum_square_round_bold</item>
     </style>
 
     <style name="Theme.SecondHandTrade" parent="Base.Theme.SecondHandTrade">
@@ -16,7 +16,7 @@
         <item name="bottomSheetDialogTheme">@style/StyleBottomSheetDialog</item>
     </style>
 
-    <!-- 커스텀 스타일-->
+    <!-- 커스텀 스타일 -->
     <style name="StyleToolbar" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:fontFamily">@font/nanum_square_round_extra_bold</item>
         <item name="android:background">@color/lighter_gray</item>
@@ -27,9 +27,7 @@
         <item name="android:backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
         <item name="iconTint">@color/white</item>
-        <item name="shapeAppearance">
-            @style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary
-        </item>
+        <item name="shapeAppearance">@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary</item>
     </style>
 
     <style name="StyleSmoothBottomBar">
@@ -108,5 +106,14 @@
         <item name="trackColorActive">@color/colorSecondary</item>
         <item name="trackColorInactive">@color/light_gray</item>
         <item name="trackHeight">32dp</item>
+    </style>
+
+    <style name="StyleCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 </resources>

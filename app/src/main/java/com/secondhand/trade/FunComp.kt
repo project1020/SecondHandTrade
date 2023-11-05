@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import java.text.NumberFormat
 
 class FunComp {
     companion object {
@@ -24,6 +25,11 @@ class FunComp {
                         onLogoutFailed?.invoke()
                     }
             }
+        }
+
+        // 1000단위 쉼표 입력 함수
+        fun formatNumber(num: Int) : String {
+            return NumberFormat.getInstance().format(num)
         }
     }
 }

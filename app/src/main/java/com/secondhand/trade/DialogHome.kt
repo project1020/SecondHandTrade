@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.secondhand.trade.FunComp.Companion.formatNumber
 import com.secondhand.trade.databinding.DialogHomeBinding
-import java.text.NumberFormat
 
 class DialogHome(private val onApply: (minValue: Int, maxValue: Int?, forSale: Boolean, soldOut: Boolean) -> Unit, private val onCancel: () -> Unit) : DialogFragment() {
     private lateinit var binding: DialogHomeBinding
@@ -139,9 +139,5 @@ class DialogHome(private val onApply: (minValue: Int, maxValue: Int?, forSale: B
                 editText.addTextChangedListener(this)
             }
         })
-    }
-
-    private fun formatNumber(price: Int) : String {
-        return NumberFormat.getInstance().format(price)
     }
 }

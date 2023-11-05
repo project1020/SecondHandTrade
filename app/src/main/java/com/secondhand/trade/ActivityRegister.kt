@@ -125,7 +125,7 @@ class ActivityRegister : AppCompatActivity() {
 
     // Firebase storage에서 프로필 이미지 목록 불러오는 함수
     private fun getProfileFromStorage(callback: (List<Uri>) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("profile_image")
+        val storageRef = FirebaseStorage.getInstance().reference.child("image_profile")
         val imageList = mutableListOf<Uri>()
 
         storageRef.listAll().addOnSuccessListener { listResult ->

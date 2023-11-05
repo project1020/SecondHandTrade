@@ -51,6 +51,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/str_home_fab_post"
-        app:icon="@drawable/icon_pencil" />
+        app:icon="@drawable/icon_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
