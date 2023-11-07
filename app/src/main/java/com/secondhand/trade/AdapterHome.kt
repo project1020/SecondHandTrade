@@ -10,15 +10,21 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.Timestamp
 import com.secondhand.trade.FunComp.Companion.formatNumber
+import com.secondhand.trade.FunComp.Companion.whitePlaceHolderForGlide
 import com.secondhand.trade.databinding.RowHomeBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 data class DataHome(
-    val image : String,
-    val title : String,
-    val date : String,
-    val price : Int,
-    val isSoldOut : Boolean
+    val title : String?,
+    val content : String?,
+    val price : Int?,
+    val date: Timestamp?,
+    val userID : String?,
+    val image : String?,
+    val isSoldOut : Boolean?
 )
 
 class AdapterHome(private val context: Context) : RecyclerView.Adapter<AdapterHome.ViewHolder>() {
@@ -47,11 +53,11 @@ class AdapterHome(private val context: Context) : RecyclerView.Adapter<AdapterHo
 
     inner class ViewHolder(private val binding: RowHomeBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DataHome) {
-            Glide.with(itemView).load(item.image).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.imgProduct)
+            Glide.with(itemView).load(item.image).placeholder(whitePlaceHolderForGlide(context, 10, 10)).diskCacheStrategy(DiskCacheStrategy.ALL).into(binding.imgProduct)
             binding.txtProduct.text = item.title
-            binding.txtPrice.text = "${formatNumber(item.price)}원"
-            binding.txtDate.text = item.date
-            if (item.isSoldOut) {
+            binding.txtPrice.text = "${item.price?.let { formatNumber(it) }}원"
+            binding.txtDate.text = item.date?.toDate()?.let { SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(it) }
+            if (item.isSoldOut == true) {
                 binding.viewStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
             } else {
                 binding.viewStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.green))

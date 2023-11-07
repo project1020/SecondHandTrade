@@ -14,7 +14,7 @@ import androidx.fragment.app.activityViewModels
 import com.secondhand.trade.FunComp.Companion.formatNumber
 import com.secondhand.trade.databinding.DialogHomeBinding
 
-class DialogHome(private val onApply: (minValue: Int, maxValue: Int?, forSale: Boolean, soldOut: Boolean) -> Unit, private val onCancel: () -> Unit) : DialogFragment() {
+class DialogHome(private val onApply: () -> Unit, private val onCancel: () -> Unit) : DialogFragment() {
     private lateinit var binding: DialogHomeBinding
     private val viewModel by activityViewModels<DialogHomeViewModel>()
     private val editPriceMin by lazy { binding.editPriceMin }
@@ -84,7 +84,7 @@ class DialogHome(private val onApply: (minValue: Int, maxValue: Int?, forSale: B
                     setSoldOut(soldOut)
                 }
                 // [최소 금액, 최대 금액, 판매 중, 판매 완료] 값 반환
-                onApply.invoke(minValue, maxValue, forSale, soldOut)
+                onApply.invoke()
                 dismiss()
             }
         }
