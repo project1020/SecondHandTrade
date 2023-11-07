@@ -1,6 +1,10 @@
 package com.secondhand.trade
 
 import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -30,6 +34,12 @@ class FunComp {
         // 1000단위 쉼표 입력 함수
         fun formatNumber(num: Int) : String {
             return NumberFormat.getInstance().format(num)
+        }
+
+        fun whitePlaceHolderForGlide(context: Context, width: Int, height: Int): BitmapDrawable {
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            bitmap.eraseColor(Color.WHITE)
+            return BitmapDrawable(context.resources, bitmap)
         }
     }
 }
