@@ -4,13 +4,35 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.secondhand.trade.databinding.ActivityMainBinding
+
+class DialogHomeViewModel : ViewModel() {
+    // 최소 가격
+    private val _minValue = MutableLiveData<Int>(0) // 초기값 0
+    val minValue: LiveData<Int> get() = _minValue
+    // 최대 가격
+    private val _maxValue = MutableLiveData<Int?>() // null 허용을 위해 ?타입
+    val maxValue: LiveData<Int?> get() = _maxValue
+    // 판매 중
+    private val _forSale = MutableLiveData<Boolean>()
+    val forSale: LiveData<Boolean> get() = _forSale
+    // 판매 완료
+    private val _soldOut = MutableLiveData<Boolean>()
+    val soldOut: LiveData<Boolean> get() = _soldOut
+    // setter 함수
+    fun setMinValue(value: Int) { _minValue.value = value }
+    fun setMaxValue(value: Int?) { _maxValue.value = value }
+    fun setForSale(value: Boolean) { _forSale.value = value }
+    fun setSoldOut(value: Boolean) { _soldOut.value = value }
+}
 
 class ActivityMain : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    // 뒤로가기 버튼 두 번 클릭 콜백
     private var backPressedTime: Long = 0
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -22,11 +44,12 @@ class ActivityMain : AppCompatActivity() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        this.onBackPressedDispatcher.addCallback(this, callback)
+        this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
 
         changeFragment(FragmentHome())
         binding.bottombarMain.onItemSelected = ::onNavigationItemSelected
@@ -34,10 +57,13 @@ class ActivityMain : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!Preferences.isAutoLogin)
-            Firebase.auth.signOut()
+        // 자동 로그인 상태가 아닐 시 종료하면 로그아웃
+        if (!Preferences.isAutoLogin) {
+            FunComp.logout(this)
+        }
     }
 
+    // 하단바 클릭 이벤트
     private fun onNavigationItemSelected(position: Int) {
         changeFragment(
             when (position) {
@@ -48,6 +74,7 @@ class ActivityMain : AppCompatActivity() {
         )
     }
 
+    // fragment 전환 함수
     private fun changeFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(binding.frameMain.id, fragment).commit()
     }

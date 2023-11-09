@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -15,6 +16,7 @@ import com.secondhand.trade.databinding.FragmentMyinfoBinding
 class FragmentMyInfo : Fragment() {
     private val binding by lazy { FragmentMyinfoBinding.inflate(layoutInflater) }
     private val db = FirebaseFirestore.getInstance()
+
     private lateinit var mainActivity: ActivityMain
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -22,37 +24,42 @@ class FragmentMyInfo : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val user = Firebase.auth.currentUser
-        if (user != null) {
-            val userId = user.uid
-            getNickname(userId) { nickname ->
-                binding.txtNickname.text = nickname ?: ""
-            }
+        initProfile()
 
-            val userEmail = user.email
-            binding.txtEmail.text = userEmail ?: ""
-        }
-
+        // 로그아웃 버튼 클릭
         binding.btnLogout.setOnClickListener {
-            Firebase.auth.signOut()
-            startActivity(Intent(mainActivity, ActivityLogin::class.java)).also { mainActivity.finish() }
+            // FunComp 클래스의 로그아웃 함수 실행
+            FunComp.logout(mainActivity,
+                onLogoutSuccess = {
+                    startActivity(Intent(mainActivity, ActivityLogin::class.java)).also { mainActivity.finish() }
+                }
+            )
         }
-
         return binding.root
     }
 
-    private fun getNickname(userId: String, onComplete: (String?) -> Unit) {
-        db.collection("nicknames")
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val document = task.result?.documents?.firstOrNull()
-                    val nickname = document?.id
-                    onComplete(nickname)
-                } else {
-                    onComplete(null)
-                }
+    // 프로필 표시 함수
+    private fun initProfile() {
+        Firebase.auth.currentUser?.let { user ->
+            val userId = user.uid
+            getNickname(userId) {
+                Glide.with(mainActivity).load(it.second).into(binding.imgProfile)
+                binding.txtNickname.text =  it.first
+                binding.txtEmail.text = user.email
             }
+        }
+    }
+
+    // 로그인 되어있는 계정의 닉네임을 Firestore 데이터베이스에서 가져오는 함수
+    private fun getNickname(userId: String, onComplete: (Pair<String?, String?>) -> Unit) {
+        db.collection("users").document(userId).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val nickname = task.result.getString("nickname")
+                val profileImage = task.result.getString("profileImage")
+                onComplete(Pair(nickname, profileImage))
+            } else {
+                onComplete(Pair(null, null))
+            }
+        }
     }
 }
