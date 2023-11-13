@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "982840443992",
+    "project_id": "secondhandtrade-e2a57",
+    "storage_bucket": "secondhandtrade-e2a57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982840443992:android:d55e55f96778e819b2362d",
+        "android_client_info": {
+          "package_name": "com.secondhand.trade"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpIpecmi4ISs0ZR4D4bSqQTZ4I9KEx4p0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
