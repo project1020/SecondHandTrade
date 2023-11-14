@@ -1,6 +1,7 @@
 package com.secondhand.trade
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -46,7 +47,9 @@ class FragmentChat : Fragment() {
         binding.recyclerview.adapter = adapter  // 어댑터를 리사이클러뷰에 연결
         updateList()
         binding.button.setOnClickListener {
-            addItem()
+            startActivity(
+                Intent(requireContext(), SendMessageActivity::class.java)
+            )
         }
         return binding.root
     }
@@ -61,6 +64,7 @@ class FragmentChat : Fragment() {
             adapter?.updateList(items)
         }
     }
+    /*
     private fun addItem() {
         receivedMessagesCollectionRef = db.collection("chats").document(userId).collection("receivedmessage")
         Firebase.auth.currentUser?.let { user ->
@@ -77,6 +81,7 @@ class FragmentChat : Fragment() {
                 }
             }
         }
-
     }
+
+     */
 }
