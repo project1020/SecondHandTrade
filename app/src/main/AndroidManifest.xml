@@ -21,5 +21,6 @@
         </activity>
         <activity android:name=".ActivityRegister"/>
         <activity android:name=".ActivityMain"/>
+        <activity android:name=".SendMessageActivity" />
     </application>
 </manifest>
