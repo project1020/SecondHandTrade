@@ -46,7 +46,7 @@ class FragmentChat : Fragment() {
         return binding.root
     }
 
-
+    //받은 메세지들 출력하는 메소드
     private fun updateList() {
         receivedMessagesCollectionRef.get().addOnSuccessListener {
             val items = mutableListOf<Item>()
