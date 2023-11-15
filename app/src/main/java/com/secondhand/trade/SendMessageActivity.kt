@@ -24,7 +24,7 @@ class SendMessageActivity : AppCompatActivity(){
             addItem()
             finish()
         }
-
+    //
     }
 
     private fun initProfile() {
