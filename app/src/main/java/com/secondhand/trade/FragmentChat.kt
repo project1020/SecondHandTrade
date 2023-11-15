@@ -37,7 +37,7 @@ class FragmentChat : Fragment() {
         adapter = MyAdapter(requireContext(), emptyList())
         binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerview.adapter = adapter  // 어댑터를 리사이클러뷰에 연결
-        updateList()
+        updateList() //받은 메세지들 출력
         binding.button.setOnClickListener {
             startActivity(
                 Intent(requireContext(), SendMessageActivity::class.java)
