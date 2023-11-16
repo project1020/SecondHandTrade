@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.secondhand.trade.databinding.FragmentHomeBinding
 
+// 커밋 테스트
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
