@@ -1,6 +1,7 @@
 package com.secondhand.trade
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -76,6 +77,11 @@ class FragmentHome : Fragment() {
         binding.swipeHome.setOnRefreshListener {
             homeAdapter.itemList.clear()
             initItemList()
+        }
+
+
+        fabHome.setOnClickListener {
+            startActivity(Intent(mainActivity, ActivityArticle::class.java))
         }
 
         initRecyclerview()

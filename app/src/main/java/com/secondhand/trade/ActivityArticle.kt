@@ -26,7 +26,7 @@ data class Articles (
 }
 
 class ActivityArticle : AppCompatActivity() {
-    private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }            //
+    private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }
     private val editContent by lazy { findViewById<EditText>(R.id.editContent) }
     private val editPrice by lazy { findViewById<EditText>(R.id.editPrice) }
     private val isSoldOut by lazy { findViewById<CheckBox>(R.id.isSoldOut) }
@@ -42,6 +42,7 @@ class ActivityArticle : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnSubmit).setOnClickListener{
             addBoard()
+            // 입력한 정보를 보관한 상태로 홈 화면으로 돌아가야 함
         }
 
     }
