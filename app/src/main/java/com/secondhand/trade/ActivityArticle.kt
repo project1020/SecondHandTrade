@@ -6,10 +6,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 //import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 data class Articles (
     var title: String?= null,
@@ -29,7 +26,7 @@ class ActivityArticle : AppCompatActivity() {
     private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }
     private val editContent by lazy { findViewById<EditText>(R.id.editContent) }
     private val editPrice by lazy { findViewById<EditText>(R.id.editPrice) }
-    private val isSoldOut by lazy { findViewById<CheckBox>(R.id.isSoldOut) }
+    private val isSoldOut by lazy { findViewById<CheckBox>(R.id.isSoldOutFix) }
     //private val imageSelect by lazy { findViewById<ImageView>(R.id.photoImageView) }
     private val firestore = FirebaseFirestore.getInstance()
     private val board = firestore.collection("board_test")

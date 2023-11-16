@@ -23,5 +23,6 @@
         <activity android:name=".ActivityMain"/>
         <activity android:name=".SendMessageActivity" />
         <activity android:name=".ActivityArticle" />
+        <activity android:name=".ActivityFixArticle" />
     </application>
 </manifest>

@@ -119,8 +119,16 @@ class FragmentHome : Fragment() {
                 }
             })
 
-            homeAdapter.setOnItemClickListener { item, position ->
-                Toast.makeText(mainActivity, "item : $item, position : $position", Toast.LENGTH_SHORT).show()
+            homeAdapter.setOnItemClickListener { item, _ ->
+               startActivity(Intent(mainActivity, ActivityFixArticle::class.java).apply {
+                    putExtra("title", item.title)
+                    putExtra("content", item.content)
+                    putExtra("price", item.price)
+                    putExtra("date", item.date)
+                    putExtra("image", item.image)
+                    putExtra("isSoldOut", item.isSoldOut)
+                    putExtra("userID", item.userID)
+                })
             }
 
         }

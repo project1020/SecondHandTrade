@@ -6,19 +6,18 @@
     xmlns:tool="http://schemas.android.com/tools">
 
     <EditText
-        android:id="@+id/editContent"
+        android:id="@+id/editContentFix"
         android:layout_width="380dp"
         android:layout_height="100dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:hint="내용"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/editTitleFix" />
 
     <LinearLayout
-        android:id="@+id/toolbarLayout"
+        android:id="@+id/toolbarLayout1"
         android:layout_width="0dp"
         android:layout_height="?actionBarSize"
         android:gravity="center_vertical"
@@ -30,93 +29,84 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="물품 등록"
+            android:text="게시글 수정"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <View
-        android:id="@+id/toolbarUnderLineView"
+        android:id="@+id/toolbarUnderLineView1"
         android:layout_width="0dp"
         android:layout_height="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarLayout1" />
 
     <EditText
-        android:id="@+id/editTitle"
+        android:id="@+id/editTitleFix"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:hint="글 제목"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.531"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/userIDFix" />
 
     <EditText
-        android:id="@+id/editPrice"
+        android:id="@+id/editPriceFix"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:hint="가격"
         android:inputType="numberDecimal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageAddButton" />
+        app:layout_constraintTop_toBottomOf="@+id/editContentFix" />
 
     <Button
-        android:id="@+id/imageAddButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="이미지 등록하기"
-        app:layout_constraintEnd_toEndOf="@id/photoImageView"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/photoImageView"
-        app:layout_constraintTop_toBottomOf="@+id/photoImageView" />
-
-    <ImageView
-        android:id="@+id/photoImageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.474" />
-
-    <Button
-        android:id="@+id/btnSubmit"
+        android:id="@+id/btnModify"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:text="등록하기"
+        android:text="글 수정하기"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
-        tool:visibility="visible"/>
 
     <CheckBox
-        android:id="@+id/isSoldOut"
+        android:id="@+id/isSoldOutFix"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:text="판매완료"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageAddButton" />
+        app:layout_constraintTop_toBottomOf="@+id/editContentFix" />
+
+    <EditText
+        android:id="@+id/editDateFix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="time"
+        android:inputType="date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/userIDFix"
+        tool:layout_editor_absoluteY="86dp" />
+
+    <TextView
+        android:id="@+id/userIDFix"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="닉네임"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarLayout1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
