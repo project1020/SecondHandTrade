@@ -44,10 +44,6 @@ class ActivityArticle : AppCompatActivity() {
             addBoard()
         }
 
-        findViewById<Button>(R.id.btnmodify).setOnClickListener{
-            updateBoard()
-        }
-
     }
 
     private fun addBoard() {    // db에 값을 등록하는 함수
@@ -64,12 +60,12 @@ class ActivityArticle : AppCompatActivity() {
             //"imageUrl" to imageurl
         )
         board.add(itemMap)
-                .addOnSuccessListener { updateBoard() }.addOnFailureListener {  }
+                .addOnSuccessListener { updateList() }.addOnFailureListener {  }
 
     }
 
 
-    private fun updateBoard() {// db에 이미 있는 값 수정해서 적용하는 update 함수
+    private fun updateList() {// db에 이미 있는 값 수정해서 적용하는 update 함수
         board.get().addOnSuccessListener {
             val article = mutableListOf<Articles>()
             for (doc in it) {
@@ -77,6 +73,7 @@ class ActivityArticle : AppCompatActivity() {
             }
         }
     }
+
 
 
 
