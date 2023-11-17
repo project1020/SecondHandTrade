@@ -47,7 +47,7 @@ class ActivityRegister : AppCompatActivity() {
 
         this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
 
-        setTextWatchers()
+        editTextOnFocusAndTextChanged()
         setProfileImage()
 
         // 회원가입 버튼 클릭 이벤트
@@ -57,12 +57,9 @@ class ActivityRegister : AppCompatActivity() {
             val password = binding.editPassword.text.toString()
             val passwordConfirm = binding.editPasswordConfirm.text.toString()
 
-            // edittext 공백 체크
-            if (nickname.trim().isEmpty()) inputNickname.error = "닉네임을 입력해 주세요." else inputNickname.error = null
-            if (email.trim().isEmpty()) inputEmail.error = "이메일을 입력해 주세요." else inputEmail.error = null
-            if (password.trim().isEmpty()) inputPassword.error = "비밀번호를 입력해 주세요." else inputPassword.error = null
-            if (passwordConfirm.trim().isEmpty() || passwordConfirm != password) inputPasswordConfirm.error = "비밀번호가 일치하지 않습니다." else inputPasswordConfirm.error = null
-            if (email.trim().isNotEmpty() && password.trim().isNotEmpty() && passwordConfirm.trim().isNotEmpty() && (password == passwordConfirm)) doRegister(nickname, email, password)
+            if (isValidInput(nickname, email, password, passwordConfirm)) {
+                doRegister(nickname, email, password)
+            }
         }
 
         // 로그인 텍스트 클릭
@@ -71,13 +68,47 @@ class ActivityRegister : AppCompatActivity() {
         }
     }
 
-    // inputLayout 입력 변화 감지 함수
-    private fun setTextWatchers() {
-        // edittext 입력시 inputLayout error 삭제
-        binding.editNickname.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
-        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputEmail.error = null })
-        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPassword.error = null })
-        binding.editPasswordConfirm.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPasswordConfirm.error = null })
+    // EditText 유효성 검사 함수
+    private fun isValidInput(nickname: String, email: String, password: String, passwordConfirm: String): Boolean {
+        inputNickname.error = when {
+            nickname.trim().isEmpty() -> "닉네임을 입력해 주세요."
+            Regex("\\s").containsMatchIn(nickname) -> "공백을 확인해 주세요."
+            !nickname.matches(Regex("^[a-zA-Z0-9가-힣]+\$")) -> "특수문자는 사용이 불가능합니다."
+            else -> null
+        }
+
+        inputEmail.error = if (email.trim().isEmpty()) "이메일을 입력해 주세요." else null
+        inputPassword.error = if (password.trim().isEmpty()) "비밀번호를 입력해 주세요." else null
+        inputPasswordConfirm.error = when {
+            passwordConfirm.trim().isEmpty() -> "비밀번호가 일치하지 않습니다."
+            passwordConfirm != password -> "비밀번호가 일치하지 않습니다."
+            else -> null
+        }
+
+        return inputNickname.error == null && inputEmail.error == null && inputPassword.error == null && inputPasswordConfirm.error == null
+    }
+
+    // EditText 포커스 및 입력 감지 함수
+    private fun editTextOnFocusAndTextChanged() {
+        binding.editNickname.apply {
+            addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputNickname.error = null }
+        }
+
+        binding.editEmail.apply {
+            addTextChangedListener(onTextChanged = { _, _, _, _, -> inputEmail.error = null })
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputEmail.error = null }
+        }
+
+        binding.editPassword.apply {
+            addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPassword.error = null })
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputPassword.error = null }
+        }
+
+        binding.editPasswordConfirm.apply {
+            addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPasswordConfirm.error = null })
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputPasswordConfirm.error = null }
+        }
     }
 
     // 프로필 이미지 설정 함수
@@ -125,17 +156,15 @@ class ActivityRegister : AppCompatActivity() {
 
     // Firebase storage에서 프로필 이미지 목록 불러오는 함수
     private fun getProfileFromStorage(callback: (List<Uri>) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("image_profile")
         val imageList = mutableListOf<Uri>()
 
-        storageRef.listAll().addOnSuccessListener { listResult ->
+        FirebaseStorage.getInstance().reference.child("image_profile").listAll().addOnSuccessListener { listResult ->
             for (file in listResult.items) {
                 file.downloadUrl.addOnSuccessListener { uri ->
                     imageList.add(uri)
 
-                    if (imageList.size == listResult.items.size) {
+                    if (imageList.size == listResult.items.size)
                         callback(imageList)
-                    }
                 }
             }
         }.addOnFailureListener {
@@ -148,30 +177,28 @@ class ActivityRegister : AppCompatActivity() {
         // isNickNameUnique 함수 호출
         isNicknameAvailable(nickname) { isAvailable ->
             if (isAvailable) { // 닉네임이 존재하지 않을 때
-                Firebase.auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) { // 회원가입 성공
-                        registerUsers(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri, { // setNickname 함수 호출
-                            FunComp.logout(this,
-                                onLogoutSuccess = {
-                                    Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
-                                }
-                            )
+                Firebase.auth.createUserWithEmailAndPassword(email, password)
+                    .addOnSuccessListener { // 회원가입 성공
+                        registerUsers(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri, {
+                            Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
+                            Preferences.isAutoLogin = true
+                            startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
                         }, { // 닉네임 설정 실패로 회원가입 실패
                             Toast.makeText(this, "회원가입에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         })
-                    } else {
+                    }
+                    .addOnFailureListener { // 회원가입 실패
                         when {
                             // 계정이 이미 존재할 때
-                            task.exception is FirebaseAuthUserCollisionException -> {
+                            it is FirebaseAuthUserCollisionException -> {
                                 inputEmail.error = "이미 존재하는 계정입니다."
                             }
                             // 이메일 형식이 올바르지 않을 때
-                            task.exception?.message?.contains("The email address is badly formatted") == true -> {
+                            it.message?.contains("The email address is badly formatted") == true -> {
                                 inputEmail.error = "이메일 형식이 올바르지 않습니다."
                             }
                             // 비밀번호가 6자리 미만일 때
-                            task.exception?.message?.contains("The given password is invalid") == true -> {
+                            it.message?.contains("The given password is invalid") == true -> {
                                 inputPassword.error = "비밀번호는 6자리 이상이어야 합니다."
                             }
                             // 그 외
@@ -180,7 +207,6 @@ class ActivityRegister : AppCompatActivity() {
                             }
                         }
                     }
-                }
             } else { // 닉네임이 존재할 때
                 inputNickname.error = "이미 사용 중인 닉네임입니다."
             }
@@ -190,18 +216,25 @@ class ActivityRegister : AppCompatActivity() {
     // 닉네임 중복 확인 함수
     private fun isNicknameAvailable(nickname: String, onComplete: (Boolean) -> Unit) {
         db.collection("users").whereEqualTo("nickname", nickname).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) onComplete(task.result?.isEmpty ?: true) else onComplete(false)
+            if (task.isSuccessful)
+                onComplete(task.result?.isEmpty ?: true)
+            else
+                onComplete(false)
         }
     }
 
     // firestore에 닉네임 및 프로필 이미지 등록 함수
     private fun registerUsers(userId: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        db.collection("users").document(userId).set(mapOf("nickname" to nickname, "profileImage" to profileImage)).addOnCompleteListener {task ->
-            if (task.isSuccessful) {
+        val userMap = mapOf(
+            "nickname" to nickname,
+            "profileImage" to profileImage,
+            "isLoggedIn" to true
+        )
+        db.collection("users").document(userId).set(userMap).addOnCompleteListener { task ->
+            if (task.isSuccessful)
                 onSuccess()
-            } else {
+            else
                 onFailure()
-            }
         }
     }
 }
