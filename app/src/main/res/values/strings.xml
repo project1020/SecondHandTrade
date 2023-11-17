@@ -21,6 +21,8 @@
     <string name="str_register_btn_register">회원가입</string>
     <string name="str_register_txt_account">이미 계정이 있으신가요?</string>
     <string name="str_register_txt_login"><u>로그인</u></string>
+    <!--activity_post-->
+    <string name="str_post_btn_chat">채팅하기</string>
     <!--fragment_home-->
     <string name="str_home_toolbar_title">중고거래</string>
     <string name="str_home_fab_post">물품 등록</string>
@@ -28,7 +30,7 @@
     <string name="str_myinfo_txt_email">이메일</string>
     <string name="str_myinfo_btn_logout">로그아웃</string>
     <!--bottomsheet_register-->
-    <string name="str_register_text_choose">프로필 이미지 선택</string>
+    <string name="str_register_text_choose">프로필 캐릭터 선택</string>
     <!--dialog_home-->
     <string name="str_home_txt_price_range">가격</string>
     <string name="str_home_txt_forsale">판매 여부</string>
