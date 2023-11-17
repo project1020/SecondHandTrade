@@ -14,7 +14,7 @@ class ActivityFixArticle : AppCompatActivity() {
     private val fixContent by lazy { findViewById<EditText>(R.id.editContentFix) }
     private val fixPrice by lazy { findViewById<EditText>(R.id.editPriceFix) }
     private val fixSoldOut by lazy { findViewById<CheckBox>(R.id.isSoldOutFix) }
-    private val fixdate by lazy { findViewById<EditText>(R.id.editDateFix) }
+    //private val fixdate by lazy { findViewById<EditText>(R.id.editDateFix) }
     private val userIdFix by lazy { findViewById<TextView>(R.id.userIDFix) }
     //private val imageSelect by lazy { findViewById<ImageView>(R.id.photoImageView) }
     private val firestore = FirebaseFirestore.getInstance()
@@ -40,6 +40,7 @@ class ActivityFixArticle : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnModify).setOnClickListener {
             updateBoard()
+
         }
 
     }
@@ -49,26 +50,21 @@ class ActivityFixArticle : AppCompatActivity() {
         val content = fixContent.text.toString()
         val price = fixPrice.text.toString().toInt()
         val isSoldOut = fixSoldOut.isChecked
+        val userId = userIdFix.text.toString()
 
-        val itemMap = hashMapOf(
+        val dbMap = hashMapOf(
             "title" to title,
             "price" to price,
             "content" to content,
             "isSoldout" to isSoldOut,
             //"imageUrl" to imageurl
+            "userID" to userId
         )
-        board.add(itemMap)
-            .addOnSuccessListener { updateList() }.addOnFailureListener {  }
+        board.add(dbMap)
+            .addOnSuccessListener {
+                finish()
+            }.addOnFailureListener {  }
     }
 
 
-
-    private fun updateList() {// db에 이미 있는 값 수정해서 적용하는 update 함수
-        board.get().addOnSuccessListener {
-            val article = mutableListOf<Articles>()
-            for (doc in it) {
-                article.add(Articles(doc))
-            }
-        }
-    }
 }
