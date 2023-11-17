@@ -1,7 +1,6 @@
 package com.secondhand.trade
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,19 +21,35 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.secondhand.trade.databinding.FragmentHomeBinding
 
+// 커밋 테스트
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
+
     private lateinit var homeAdapter: AdapterHome
     private lateinit var mainActivity: ActivityMain
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
+
+    private val viewModel by activityViewModels<HomeFilterViewModel>()
+
     private val firestore = FirebaseFirestore.getInstance()
+
+    private var searchQuery: String? = null
     private var lastItem: DocumentSnapshot? = null
     private var isLoading = false
     private var isLastPage = false
+
+    private var minPrice: Int = 0
+    private var maxPrice: Int? = null
+    private var forSale: Boolean = true
+    private var soldOut: Boolean = true
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mainActivity = context as ActivityMain
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // 액션바 추가
         mainActivity.setSupportActionBar(binding.toolbarHome)
@@ -41,13 +57,21 @@ class FragmentHome : Fragment() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_home_toolbar_item, menu)
-                val searchItem = menu.findItem(R.id.menuSearch)
-                val searchView = searchItem.actionView as SearchView
+                searchMenuItem = menu.findItem(R.id.menuSearch)
+                searchView = searchMenuItem.actionView as SearchView
 
                 searchView.queryHint = "물품 검색"
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextSubmit(query: String): Boolean {
                         // 검색 기능 구현
+                        /*
+                            검색 문제점 (firebase 자체 기능 한계)
+                            - 대소문자 무시 불가
+                            - 중간 문자 검색 불가
+                                ㄴ 예를 들어 갤럭시 S23 Ultra에서 S23과 Ultra는 검색 안됨
+                         */
+                        searchQuery = query
+                        initItemList()
                         return false
                     }
 
@@ -55,6 +79,13 @@ class FragmentHome : Fragment() {
                         return false
                     }
                 })
+                searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        // 키보드가 닫혔을 때 원래 검색어로 복원
+                        if (searchQuery != null)
+                            searchView.setQuery(searchQuery, false)
+                    }
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -63,7 +94,7 @@ class FragmentHome : Fragment() {
                          // 필터 다이얼로그 띄우기
                          DialogHome(
                              onApply = {
-                                  // 필터링 기능 구현
+                                 initItemList()
                              },
                              onCancel = {}
                          ).show(childFragmentManager, "DialogHome")
@@ -73,20 +104,41 @@ class FragmentHome : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
+//        binding.fabHome.setOnClickListener {
+//            startActivity(Intent(mainActivity, ActivityOOO::class.java))
+//        }
+
         // 당겨서 새로고침
         binding.swipeHome.setOnRefreshListener {
+            searchQuery = null
             homeAdapter.itemList.clear()
+            searchMenuItem.collapseActionView()
             initItemList()
         }
 
-
-        fabHome.setOnClickListener {
-            startActivity(Intent(mainActivity, ActivityArticle::class.java))
-        }
-
+        initViewModel()
         initRecyclerview()
         initItemList()
         return binding.root
+    }
+
+    // viewModel 값 변화 감지
+    private fun initViewModel() {
+        viewModel.minPrice.observe(viewLifecycleOwner) { value ->
+            minPrice = value
+        }
+
+        viewModel.maxPrice.observe(viewLifecycleOwner) { value ->
+            maxPrice = value
+        }
+
+        viewModel.forSale.observe(viewLifecycleOwner) { value ->
+            forSale = value
+        }
+
+        viewModel.soldOut.observe(viewLifecycleOwner) { value ->
+            soldOut = value
+        }
     }
 
     // recyclerview 설정
@@ -97,7 +149,7 @@ class FragmentHome : Fragment() {
             adapter = homeAdapter
             addItemDecoration(RecyclerViewItemDecorator(5)) // 아이템 간격 설정
             setHasFixedSize(true) // 아이템 크기가 고정되어 있음을 명시
-            itemAnimator = null // 아이템 변경 애니메이션 삭제
+            itemAnimator = null // 아이템 변경 애니메이션 삭제 (깜빡임 방지)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -114,36 +166,58 @@ class FragmentHome : Fragment() {
                     val itemTotalCount = recyclerView.adapter!!.itemCount - 1
                     if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
                         // 다음 목록 가져오기
-                        if (!isLoading && !isLastPage) loadNextItem()
+                        if (!isLoading && !isLastPage)
+                            loadNextItem()
                     }
                 }
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-               startActivity(Intent(mainActivity, ActivityFixArticle::class.java).apply {
-                    putExtra("title", item.title)
-                    putExtra("content", item.content)
-                    putExtra("price", item.price)
-                    putExtra("date", item.date)
-                    putExtra("image", item.image)
-                    putExtra("isSoldOut", item.isSoldOut)
-                    putExtra("userID", item.userID)
-                })
+//               startActivity(Intent(mainActivity, ActivityArticle::class.java).apply {
+//                    putExtra("id", item.id)
+//                    putExtra("title", item.title)
+//                    putExtra("content", item.content)
+//                    putExtra("price", item.price)
+//                    putExtra("date", item.date)
+//                    putExtra("image", item.image)
+//                    putExtra("isSoldOut", item.isSoldOut)
+//                    putExtra("userID", item.userID)
+//                })
             }
-
         }
     }
 
-    // 테스트용 아이템 리스트
+    // 아이템 가져오기
     private fun initItemList() {
         binding.swipeHome.isRefreshing = true // 로딩 시 인디케이터 보이기
         isLastPage = false
-        
-        // firestore 데이터베이스에서 글 목록 가져오기
-        // 날짜 기준 내림차순 정렬
-        firestore.collection("board_test").orderBy("date", Query.Direction.DESCENDING).limit(5).get().addOnSuccessListener { documents ->
+
+        val filteredQuery = firestore.collection("board_test").let {
+            var baseQuery: Query = it // 기본 쿼리 선언
+
+            // 판매 여부 필터링
+            when {
+                forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
+                !forSale && soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", true)
+            }
+            
+            // TODO : 가격 필터링 추가
+
+            // 검색 유무에 따라서 분리
+            if (searchQuery.isNullOrEmpty()) {
+                baseQuery.orderBy("date", Query.Direction.DESCENDING)// 날짜 기준 내림차순
+            } else {
+                baseQuery
+                    .orderBy("title")
+                    .startAt(searchQuery)
+                    .endAt(searchQuery + '\uf8ff')
+            }
+        }.limit(5) // 5개씩 끊어서 렉 방지
+
+        filteredQuery.get().addOnSuccessListener { documents ->
             val itemList = documents.map { document ->
                 DataHome(
+                    id = document.id,
                     title = document.getString("title"),
                     content = document.getString("content"),
                     price = document.getLong("price")?.toInt(),
@@ -164,16 +238,38 @@ class FragmentHome : Fragment() {
         }
     }
 
+    // 다음 아이템 가져오기
     private fun loadNextItem() {
         if (isLoading) return
         isLoading = true
         homeAdapter.setLoading(true)
 
-        lastItem?.let {
-            firestore.collection("board_test").orderBy("date", Query.Direction.DESCENDING).startAfter(it).limit(5).get().addOnSuccessListener { documents ->
+        lastItem?.let { documentSnapshot ->
+            val filteredQuery = firestore.collection("board_test").let { collectionReference ->
+                var baseQuery: Query = collectionReference
+
+                when {
+                    forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
+                    !forSale && soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", true)
+                }
+
+                if (searchQuery.isNullOrEmpty()) {
+                    baseQuery.orderBy("date", Query.Direction.DESCENDING)
+                        .startAfter(documentSnapshot)
+                } else {
+                    baseQuery.orderBy("title")
+                        .startAt(searchQuery)
+                        .endAt(searchQuery + '\uf8ff')
+                        .endAt(searchQuery + '\uf8ff')
+                        .startAfter(documentSnapshot)
+                }
+            }.limit(5)
+
+            filteredQuery.get().addOnSuccessListener { documents ->
                 val startPosition = homeAdapter.itemList.size
                 val itemList = documents.map { document ->
                     DataHome(
+                        id = document.id,
                         title = document.getString("title"),
                         content = document.getString("content"),
                         price = document.getLong("price")?.toInt(),

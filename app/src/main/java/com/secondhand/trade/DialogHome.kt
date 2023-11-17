@@ -16,7 +16,7 @@ import com.secondhand.trade.databinding.DialogHomeBinding
 
 class DialogHome(private val onApply: () -> Unit, private val onCancel: () -> Unit) : DialogFragment() {
     private lateinit var binding: DialogHomeBinding
-    private val viewModel by activityViewModels<DialogHomeViewModel>()
+    private val viewModel by activityViewModels<HomeFilterViewModel>()
     private val editPriceMin by lazy { binding.editPriceMin }
     private val editPriceMax by lazy { binding.editPriceMax }
     private val tgbtnForSale by lazy { binding.tgbtnForSale }
@@ -37,11 +37,11 @@ class DialogHome(private val onApply: () -> Unit, private val onCancel: () -> Un
         */
 
         // viewmodel에 저장된 값 불러와서 적용
-        viewModel.minValue.observe(viewLifecycleOwner) { value ->
+        viewModel.minPrice.observe(viewLifecycleOwner) { value ->
             editPriceMin.setText(formatNumber(value))
         }
 
-        viewModel.maxValue.observe(viewLifecycleOwner) { value ->
+        viewModel.maxPrice.observe(viewLifecycleOwner) { value ->
             editPriceMax.setText(value?.let { formatNumber(it) })
         }
 

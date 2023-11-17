@@ -19,6 +19,7 @@ import com.secondhand.trade.databinding.ProgressbarHomeBinding
 import com.secondhand.trade.databinding.RowHomeBinding
 
 data class DataHome(
+    val id : String?,
     val title : String?,
     val content : String?,
     val price : Int?,
