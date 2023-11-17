@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.secondhand.trade.databinding.FragmentHomeBinding
 
+// 커밋 테스트
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
@@ -80,7 +82,8 @@ class FragmentHome : Fragment() {
                 searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (!hasFocus) {
                         // 키보드가 닫혔을 때 원래 검색어로 복원
-                        if (searchQuery != null) searchView.setQuery(searchQuery, false)
+                        if (searchQuery != null)
+                            searchView.setQuery(searchQuery, false)
                     }
                 }
             }
@@ -102,7 +105,7 @@ class FragmentHome : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
 //        binding.fabHome.setOnClickListener {
-//            startActivity(Intent(mainActivity, ActivityArticle::class.java))
+//            startActivity(Intent(mainActivity, ActivityOOO::class.java))
 //        }
 
         // 당겨서 새로고침
@@ -119,6 +122,7 @@ class FragmentHome : Fragment() {
         return binding.root
     }
 
+    // viewModel 값 변화 감지
     private fun initViewModel() {
         viewModel.minPrice.observe(viewLifecycleOwner) { value ->
             minPrice = value
@@ -170,6 +174,7 @@ class FragmentHome : Fragment() {
 
             homeAdapter.setOnItemClickListener { item, _ ->
 //               startActivity(Intent(mainActivity, ActivityArticle::class.java).apply {
+//                    putExtra("id", item.id)
 //                    putExtra("title", item.title)
 //                    putExtra("content", item.content)
 //                    putExtra("price", item.price)
@@ -182,30 +187,37 @@ class FragmentHome : Fragment() {
         }
     }
 
-    // 아이템 리스트
+    // 아이템 가져오기
     private fun initItemList() {
         binding.swipeHome.isRefreshing = true // 로딩 시 인디케이터 보이기
         isLastPage = false
 
         val filteredQuery = firestore.collection("board_test").let {
-            var baseQuery: Query = it
+            var baseQuery: Query = it // 기본 쿼리 선언
 
+            // 판매 여부 필터링
             when {
                 forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
                 !forSale && soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", true)
             }
+            
+            // TODO : 가격 필터링 추가
+
+            // 검색 유무에 따라서 분리
             if (searchQuery.isNullOrEmpty()) {
-                baseQuery.orderBy("date", Query.Direction.DESCENDING)
+                baseQuery.orderBy("date", Query.Direction.DESCENDING)// 날짜 기준 내림차순
             } else {
-                baseQuery.orderBy("title")
+                baseQuery
+                    .orderBy("title")
                     .startAt(searchQuery)
                     .endAt(searchQuery + '\uf8ff')
             }
-        }.limit(5)
+        }.limit(5) // 5개씩 끊어서 렉 방지
 
         filteredQuery.get().addOnSuccessListener { documents ->
             val itemList = documents.map { document ->
                 DataHome(
+                    id = document.id,
                     title = document.getString("title"),
                     content = document.getString("content"),
                     price = document.getLong("price")?.toInt(),
@@ -226,6 +238,7 @@ class FragmentHome : Fragment() {
         }
     }
 
+    // 다음 아이템 가져오기
     private fun loadNextItem() {
         if (isLoading) return
         isLoading = true
@@ -239,6 +252,7 @@ class FragmentHome : Fragment() {
                     forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
                     !forSale && soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", true)
                 }
+
                 if (searchQuery.isNullOrEmpty()) {
                     baseQuery.orderBy("date", Query.Direction.DESCENDING)
                         .startAfter(documentSnapshot)
@@ -255,6 +269,7 @@ class FragmentHome : Fragment() {
                 val startPosition = homeAdapter.itemList.size
                 val itemList = documents.map { document ->
                     DataHome(
+                        id = document.id,
                         title = document.getString("title"),
                         content = document.getString("content"),
                         price = document.getLong("price")?.toInt(),
