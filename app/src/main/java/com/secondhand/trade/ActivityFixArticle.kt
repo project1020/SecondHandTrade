@@ -19,6 +19,7 @@ class ActivityFixArticle : AppCompatActivity() {
     //private val imageSelect by lazy { findViewById<ImageView>(R.id.photoImageView) }
     private val firestore = FirebaseFirestore.getInstance()
     private val board = firestore.collection("board_test")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fix_article)
@@ -30,6 +31,7 @@ class ActivityFixArticle : AppCompatActivity() {
         val image = intent.getStringExtra("image")
         val isSoldOut = intent.getBooleanExtra("isSoldOut", false)
         val userID = intent.getStringExtra("userID")
+        val id = intent.getStringExtra("id")
 
         fixTitle.setText(title.toString())
         fixContent.setText(content.toString())
@@ -51,16 +53,18 @@ class ActivityFixArticle : AppCompatActivity() {
         val price = fixPrice.text.toString().toInt()
         val isSoldOut = fixSoldOut.isChecked
         val userId = userIdFix.text.toString()
+        val id = intent.getStringExtra("id")
+
 
         val dbMap = hashMapOf(
             "title" to title,
             "price" to price,
             "content" to content,
-            "isSoldout" to isSoldOut,
+            "isSoldOut" to isSoldOut,
             //"imageUrl" to imageurl
             "userID" to userId
         )
-        board.add(dbMap)
+        board.document(id.toString()).update(dbMap as Map<String, Any>)
             .addOnSuccessListener {
                 finish()
             }.addOnFailureListener {  }

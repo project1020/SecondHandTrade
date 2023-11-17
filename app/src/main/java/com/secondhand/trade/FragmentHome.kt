@@ -1,6 +1,7 @@
 package com.secondhand.trade
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -104,9 +105,9 @@ class FragmentHome : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-//        binding.fabHome.setOnClickListener {
-//            startActivity(Intent(mainActivity, ActivityOOO::class.java))
-//        }
+        binding.fabHome.setOnClickListener {
+            startActivity(Intent(mainActivity, ActivityArticle::class.java))
+        }
 
         // 당겨서 새로고침
         binding.swipeHome.setOnRefreshListener {
@@ -173,16 +174,16 @@ class FragmentHome : Fragment() {
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-//               startActivity(Intent(mainActivity, ActivityArticle::class.java).apply {
-//                    putExtra("id", item.id)
-//                    putExtra("title", item.title)
-//                    putExtra("content", item.content)
-//                    putExtra("price", item.price)
-//                    putExtra("date", item.date)
-//                    putExtra("image", item.image)
-//                    putExtra("isSoldOut", item.isSoldOut)
-//                    putExtra("userID", item.userID)
-//                })
+               startActivity(Intent(mainActivity, ActivityFixArticle::class.java).apply {
+                    putExtra("id", item.id)
+                    putExtra("title", item.title)
+                    putExtra("content", item.content)
+                    putExtra("price", item.price)
+                    putExtra("date", item.date)
+                    putExtra("image", item.image)
+                    putExtra("isSoldOut", item.isSoldOut)
+                    putExtra("userID", item.userID)
+                })
             }
         }
     }
