@@ -1,6 +1,7 @@
 package com.secondhand.trade
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -8,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.secondhand.trade.FunComp.Companion.getTimeAgo
 import com.secondhand.trade.databinding.FragmentHomeBinding
 
-// 커밋 테스트
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
@@ -40,8 +40,6 @@ class FragmentHome : Fragment() {
     private var isLoading = false
     private var isLastPage = false
 
-    private var minPrice: Int = 0
-    private var maxPrice: Int? = null
     private var forSale: Boolean = true
     private var soldOut: Boolean = true
 
@@ -122,16 +120,8 @@ class FragmentHome : Fragment() {
         return binding.root
     }
 
-    // viewModel 값 변화 감지
+    // ViewModel 값 변화 감지
     private fun initViewModel() {
-        viewModel.minPrice.observe(viewLifecycleOwner) { value ->
-            minPrice = value
-        }
-
-        viewModel.maxPrice.observe(viewLifecycleOwner) { value ->
-            maxPrice = value
-        }
-
         viewModel.forSale.observe(viewLifecycleOwner) { value ->
             forSale = value
         }
@@ -141,7 +131,7 @@ class FragmentHome : Fragment() {
         }
     }
 
-    // recyclerview 설정
+    // RecyclerView 설정
     private fun initRecyclerview() {
         homeAdapter = AdapterHome(mainActivity, binding.recyclerHome)
 
@@ -173,16 +163,16 @@ class FragmentHome : Fragment() {
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-//               startActivity(Intent(mainActivity, ActivityArticle::class.java).apply {
-//                    putExtra("id", item.id)
-//                    putExtra("title", item.title)
-//                    putExtra("content", item.content)
-//                    putExtra("price", item.price)
-//                    putExtra("date", item.date)
-//                    putExtra("image", item.image)
-//                    putExtra("isSoldOut", item.isSoldOut)
-//                    putExtra("userID", item.userID)
-//                })
+               startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
+                    putExtra("id", item.id)
+                    putExtra("title", item.title)
+                    putExtra("content", item.content)
+                    putExtra("price", item.price)
+                    putExtra("date", getTimeAgo(item.date?.toDate()))
+                    putExtra("image", item.image)
+                    putExtra("isSoldOut", item.isSoldOut)
+                    putExtra("userID", item.userID)
+                })
             }
         }
     }
@@ -200,8 +190,6 @@ class FragmentHome : Fragment() {
                 forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
                 !forSale && soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", true)
             }
-            
-            // TODO : 가격 필터링 추가
 
             // 검색 유무에 따라서 분리
             if (searchQuery.isNullOrEmpty()) {

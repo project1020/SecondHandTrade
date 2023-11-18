@@ -11,12 +11,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.secondhand.trade.databinding.ActivityMainBinding
 
 class HomeFilterViewModel : ViewModel() {
-    // 최소 가격
-    private val _minPrice = MutableLiveData<Int>(0) // 초기값 0
-    val minPrice: LiveData<Int> get() = _minPrice
-    // 최대 가격
-    private val _maxPrice = MutableLiveData<Int?>() // null 허용을 위해 ?타입
-    val maxPrice: LiveData<Int?> get() = _maxPrice
     // 판매 중
     private val _forSale = MutableLiveData<Boolean>(true)
     val forSale: LiveData<Boolean> get() = _forSale
@@ -24,8 +18,6 @@ class HomeFilterViewModel : ViewModel() {
     private val _soldOut = MutableLiveData<Boolean>(true)
     val soldOut: LiveData<Boolean> get() = _soldOut
     // setter 함수
-    fun setMinValue(value: Int) { _minPrice.value = value }
-    fun setMaxValue(value: Int?) { _maxPrice.value = value }
     fun setForSale(value: Boolean) { _forSale.value = value }
     fun setSoldOut(value: Boolean) { _soldOut.value = value }
 }
