@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.secondhand.trade.FunComp.Companion.getTimeAgo
 import com.secondhand.trade.databinding.FragmentHomeBinding
 
 class FragmentHome : Fragment() {
@@ -103,7 +102,7 @@ class FragmentHome : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
 //        binding.fabHome.setOnClickListener {
-//            startActivity(Intent(mainActivity, ActivityOOO::class.java))
+//            startActivity(Intent(mainActivity, ActivityPostUpload::class.java))
 //        }
 
         // 당겨서 새로고침
@@ -164,13 +163,7 @@ class FragmentHome : Fragment() {
 
             homeAdapter.setOnItemClickListener { item, _ ->
                startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
-                    putExtra("id", item.id)
-                    putExtra("title", item.title)
-                    putExtra("content", item.content)
-                    putExtra("price", item.price)
-                    putExtra("date", getTimeAgo(item.date?.toDate()))
-                    putExtra("image", item.image)
-                    putExtra("isSoldOut", item.isSoldOut)
+                    putExtra("postID", item.id)
                     putExtra("userID", item.userID)
                 })
             }
