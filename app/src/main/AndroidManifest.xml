@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".ActivityRegister"/>
         <activity android:name=".ActivityMain"/>
+        <activity android:name=".ActivityPost"/>
         <activity android:name=".SendMessageActivity" />
         <activity android:name=".ActivityArticle" />
         <activity android:name=".ActivityFixArticle" />
