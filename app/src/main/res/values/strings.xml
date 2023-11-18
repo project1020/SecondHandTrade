@@ -35,7 +35,7 @@
     <string name="str_home_txt_price_range">가격</string>
     <string name="str_home_txt_forsale">판매 여부</string>
     <string name="str_home_txt_tilde">~</string>
-    <string name="str_home_txt_warning">최댓값을 최솟값보다 높게 설정해 주세요.</string>
+    <string name="str_home_txt_warning">판매 여부를 선택해 주세요.</string>
     <string name="str_home_tgbtn_forsale">판매 중</string>
     <string name="str_home_tgbtn_soldout">판매 완료</string>
     <string name="str_home_btn_cancel">취소</string>
