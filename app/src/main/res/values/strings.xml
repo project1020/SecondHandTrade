@@ -15,6 +15,7 @@
     <string name="str_login_txt_register"><u>회원가입</u></string>
     <!--activity_register-->
     <string name="str_register_edit_nickname">닉네임</string>
+    <string name="str_register_edit_birth">생년월일</string>
     <string name="str_register_edit_email">이메일</string>
     <string name="str_register_edit_password">비밀번호</string>
     <string name="str_register_edit_password_confirm">비밀번호 확인</string>
@@ -29,6 +30,7 @@
     <string name="str_home_fab_post">물품 등록</string>
     <!--fragment_myinfo-->
     <string name="str_myinfo_txt_email">이메일</string>
+    <string name="str_myinfo_txt_birth">생년월일</string>
     <string name="str_myinfo_btn_logout">로그아웃</string>
     <!--bottomsheet_register-->
     <string name="str_register_text_choose">프로필 캐릭터 선택</string>

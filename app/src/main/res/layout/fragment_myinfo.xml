@@ -29,6 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imgProfile" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -41,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txtNickname">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtEmail2"
+            android:id="@+id/txtEmailTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/str_myinfo_txt_email"
@@ -61,7 +62,31 @@
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtEmail2" />
+            app:layout_constraintTop_toBottomOf="@+id/txtEmailTitle" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtBirthTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/str_myinfo_txt_birth"
+            android:textColor="@color/dark_gray"
+            android:textSize="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtEmail" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtBirth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/gray"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtBirthTitle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
