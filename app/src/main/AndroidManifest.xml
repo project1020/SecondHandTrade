@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".MyApplication"
@@ -13,17 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SecondHandTrade"
         tools:targetApi="31">
-        <activity android:name=".ActivityLogin" android:exported="true">
+        <activity
+            android:name=".ActivityLogin"
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActivityRegister"/>
-        <activity android:name=".ActivityMain"/>
-        <activity android:name=".ActivityPost"/>
-        <activity android:name=".SendMessageActivity" />
-        <activity android:name=".ActivityArticle" />
-        <activity android:name=".ActivityFixArticle" />
+        <activity android:name=".ActivityRegister" android:screenOrientation="portrait" />
+        <activity android:name=".ActivityMain" android:screenOrientation="portrait" />
+        <activity android:name=".ActivityPost" android:screenOrientation="portrait" />
+        <activity android:name=".SendMessageActivity" android:screenOrientation="portrait" />
+        <activity android:name=".ActivityFixArticle" android:screenOrientation="portrait" />
     </application>
 </manifest>
