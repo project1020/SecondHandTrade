@@ -1,9 +1,11 @@
 package com.secondhand.trade
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
@@ -30,15 +32,18 @@ class ActivityLogin : AppCompatActivity() {
             }
         }
     }
+
+    private val startForRegisterResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            autoLogin()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        // 자동 로그인 - isAutoLogin이 true이고, 로그인이 되어있으면 실행
-        if (Preferences.isAutoLogin && Firebase.auth.currentUser != null) {
-            startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
-            return
-        }
+        autoLogin()
 
         this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
 
@@ -57,7 +62,17 @@ class ActivityLogin : AppCompatActivity() {
 
         // 회원가입 텍스트 클릭
         binding.txtRegister.setOnClickListener {
-            startActivity(Intent(this, ActivityRegister::class.java)).also { finish() }
+            //startActivity(Intent(this, ActivityRegister::class.java))
+            startForRegisterResult.launch(Intent(this, ActivityRegister::class.java))
+        }
+    }
+
+    // 자동 로그인 함수
+    private fun autoLogin() {
+        // isAutoLogin이 true이고, 로그인이 되어있으면 실행
+        if (Preferences.isAutoLogin && Firebase.auth.currentUser != null) {
+            startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
+            return
         }
     }
 

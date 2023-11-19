@@ -15,6 +15,7 @@
     <style name="Theme.SecondHandTrade" parent="Base.Theme.SecondHandTrade">
         <item name="buttonStyle">@style/StyleButton</item>
         <item name="bottomSheetDialogTheme">@style/StyleBottomSheetDialog</item>
+        <item name="android:datePickerDialogTheme">@style/StyleDatePickerDialog</item>
     </style>
 
     <!-- 커스텀 스타일 -->
@@ -49,6 +50,17 @@
 
     <style name="StyleBottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/StyleBottomSheetDialog.Modal</item>
+    </style>
+
+    <style name="StyleDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/darker_gray</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/StyleDialogButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/StyleDialogButton</item>
+    </style>
+
+    <style name="StyleDialogButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item> <!-- button text color -->
     </style>
 
     <style name="StyleButton" parent="Widget.AppCompat.Button">

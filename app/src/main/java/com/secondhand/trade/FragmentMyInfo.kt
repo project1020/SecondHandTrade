@@ -43,23 +43,24 @@ class FragmentMyInfo : Fragment() {
         Firebase.auth.currentUser?.let { user ->
             val userId = user.uid
             getNickname(userId) {
-                Glide.with(mainActivity).load(it.second).into(binding.imgProfile)
-                binding.txtNickname.text =  it.first
+                Glide.with(mainActivity).load(it.first).into(binding.imgProfile)
+                binding.txtNickname.text =  it.second
                 binding.txtEmail.text = user.email
+                binding.txtBirth.text = it.third
             }
         }
     }
 
-    // 로그인 되어있는 계정의 닉네임을 Firestore 데이터베이스에서 가져오는 함수
-    private fun getNickname(userId: String, onComplete: (Pair<String?, String?>) -> Unit) {
-        db.collection("users").document(userId).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val nickname = task.result.getString("nickname")
-                val profileImage = task.result.getString("profileImage")
-                onComplete(Pair(nickname, profileImage))
-            } else {
-                onComplete(Pair(null, null))
+    // Firestore에서 현재 로그인 되어있는 유저 정보 가져오는 함수
+    private fun getNickname(userId: String, onComplete: (Triple<String?, String?, String?>) -> Unit) {
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener { task ->
+                val nickname = task.getString("nickname")
+                val profileImage = task.getString("profileImage")
+                val birth = task.getString("birth")
+                onComplete(Triple(profileImage, nickname, birth))
+            }.addOnFailureListener {
+                onComplete(Triple(null, null, null))
             }
-        }
     }
 }

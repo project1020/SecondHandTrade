@@ -76,13 +76,6 @@ class FragmentHome : Fragment() {
                         return false
                     }
                 })
-                searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus) {
-                        // 키보드가 닫혔을 때 원래 검색어로 복원
-                        if (searchQuery != null)
-                            searchView.setQuery(searchQuery, false)
-                    }
-                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -165,7 +158,7 @@ class FragmentHome : Fragment() {
                startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
                     putExtra("postID", item.id)
                     putExtra("userID", item.userID)
-                })
+               })
             }
         }
     }

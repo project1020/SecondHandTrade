@@ -1,82 +1,87 @@
 package com.secondhand.trade
 
+import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.secondhand.trade.databinding.ActivityRegisterBinding
+import java.util.Calendar
 
 class ActivityRegister : AppCompatActivity() {
     private val binding by lazy { ActivityRegisterBinding.inflate(layoutInflater) }
     private val inputNickname by lazy { binding.inputNickname }
+    private val inputBirth by lazy { binding.inputBirth }
     private val inputEmail by lazy { binding.inputEmail }
     private val inputPassword by lazy { binding.inputPassword }
     private val inputPasswordConfirm by lazy { binding.inputPasswordConfirm }
     private lateinit var profileImageUri: String
     private val db = FirebaseFirestore.getInstance() // 파이어베이스 Firestore 데이터베이스
-    // 뒤로가기 버튼 두 번 클릭 콜백
-    private var backPressedTime: Long = 0
-    private val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() - backPressedTime >= 2000) {
-                backPressedTime = System.currentTimeMillis()
-                Snackbar.make(binding.layoutRegister, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", 2000).show()
-            } else {
-                finish()
-            }
-        }
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
-
         editTextOnFocusAndTextChanged()
         setProfileImage()
+
+        // 생년월일 EditText 클릭 이벤트
+        binding.editBirth.setOnClickListener {
+            inputBirth.error = null
+
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedMonth = String.format("%02d", selectedMonth + 1)
+                val formattedDay = String.format("%02d", selectedDay)
+                val date = "$selectedYear.$formattedMonth.$formattedDay"
+                binding.editBirth.setText(date)
+            }, year, month, day)
+
+            datePickerDialog.datePicker.maxDate = calendar.timeInMillis
+            datePickerDialog.show()
+        }
 
         // 회원가입 버튼 클릭 이벤트
         binding.btnRegister.setOnClickListener {
             val nickname = binding.editNickname.text.toString()
+            val birth = binding.editBirth.text.toString()
             val email = binding.editEmail.text.toString()
             val password = binding.editPassword.text.toString()
             val passwordConfirm = binding.editPasswordConfirm.text.toString()
 
-            if (isValidInput(nickname, email, password, passwordConfirm)) {
-                doRegister(nickname, email, password)
+            if (isValidInput(nickname, birth, email, password, passwordConfirm)) {
+                doRegister(nickname, birth, email, password)
             }
-        }
-
-        // 로그인 텍스트 클릭
-        binding.txtLogin.setOnClickListener {
-            startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
         }
     }
 
     // EditText 유효성 검사 함수
-    private fun isValidInput(nickname: String, email: String, password: String, passwordConfirm: String): Boolean {
+    private fun isValidInput(nickname: String, birth: String, email: String, password: String, passwordConfirm: String): Boolean {
         inputNickname.error = when {
             nickname.trim().isEmpty() -> "닉네임을 입력해 주세요."
             Regex("\\s").containsMatchIn(nickname) -> "공백을 확인해 주세요."
             !nickname.matches(Regex("^[a-zA-Z0-9가-힣]+\$")) -> "특수문자는 사용이 불가능합니다."
             else -> null
         }
-
+        inputBirth.error = if (birth.trim().isEmpty()) "생년월일을 입력해 주세요." else null
         inputEmail.error = if (email.trim().isEmpty()) "이메일을 입력해 주세요." else null
         inputPassword.error = if (password.trim().isEmpty()) "비밀번호를 입력해 주세요." else null
         inputPasswordConfirm.error = when {
@@ -85,7 +90,7 @@ class ActivityRegister : AppCompatActivity() {
             else -> null
         }
 
-        return inputNickname.error == null && inputEmail.error == null && inputPassword.error == null && inputPasswordConfirm.error == null
+        return inputNickname.error == null && inputBirth.error == null && inputEmail.error == null && inputPassword.error == null && inputPasswordConfirm.error == null
     }
 
     // EditText 포커스 및 입력 감지 함수
@@ -93,6 +98,10 @@ class ActivityRegister : AppCompatActivity() {
         binding.editNickname.apply {
             addTextChangedListener(onTextChanged = { _, _, _, _, -> inputNickname.error = null })
             setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputNickname.error = null }
+        }
+
+        binding.editBirth.apply {
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputBirth.error = null }
         }
 
         binding.editEmail.apply {
@@ -173,16 +182,17 @@ class ActivityRegister : AppCompatActivity() {
     }
 
     // 회원가입 시도 함수
-    private fun doRegister(nickname: String, email: String, password: String) {
+    private fun doRegister(nickname: String, birth: String, email: String, password: String) {
         // isNickNameUnique 함수 호출
         isNicknameAvailable(nickname) { isAvailable ->
             if (isAvailable) { // 닉네임이 존재하지 않을 때
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener { // 회원가입 성공
-                        registerUsers(Firebase.auth.currentUser?.uid ?: "", nickname, profileImageUri, {
+                        registerUsers(Firebase.auth.currentUser?.uid ?: "", birth,  nickname, profileImageUri, {
                             Toast.makeText(this, "회원가입에 성공하였습니다!", Toast.LENGTH_SHORT).show()
                             Preferences.isAutoLogin = true
-                            startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
+                            //startActivity(Intent(this, ActivityLogin::class.java)).also { finish() }
+                            setResult(Activity.RESULT_OK, Intent()).also { finish() }
                         }, { // 닉네임 설정 실패로 회원가입 실패
                             Toast.makeText(this, "회원가입에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         })
@@ -223,10 +233,11 @@ class ActivityRegister : AppCompatActivity() {
         }
     }
 
-    // firestore에 닉네임 및 프로필 이미지 등록 함수
-    private fun registerUsers(userId: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    // firestore에 닉네임, 생년월일, 프로필 이미지 등록 함수
+    private fun registerUsers(userId: String, birth: String, nickname: String, profileImage: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         val userMap = mapOf(
             "nickname" to nickname,
+            "birth" to birth,
             "profileImage" to profileImage,
             "isLoggedIn" to true
         )

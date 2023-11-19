@@ -6,7 +6,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ActivityFixArticle : AppCompatActivity() {
@@ -58,17 +57,6 @@ class ActivityFixArticle : AppCompatActivity() {
             //"imageUrl" to imageurl
         )
         board.add(itemMap)
-            .addOnSuccessListener { updateList() }.addOnFailureListener {  }
-    }
-
-
-
-    private fun updateList() {// db에 이미 있는 값 수정해서 적용하는 update 함수
-        board.get().addOnSuccessListener {
-            val article = mutableListOf<Articles>()
-            for (doc in it) {
-                article.add(Articles(doc))
-            }
-        }
+            .addOnSuccessListener { }.addOnFailureListener {  }
     }
 }
