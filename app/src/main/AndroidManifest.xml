@@ -34,7 +34,7 @@
             android:name=".ActivityPost"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SendMessageActivity"
+            android:name=".ActivityChat"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ActivityFixArticle"

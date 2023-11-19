@@ -1,5 +1,6 @@
 package com.secondhand.trade
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import com.secondhand.trade.databinding.ActivityPostBinding
 class ActivityPost : AppCompatActivity() {
     private val binding by lazy { ActivityPostBinding.inflate(layoutInflater) }
     private val firestore = FirebaseFirestore.getInstance()
+    var userId:String = "kss"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +31,10 @@ class ActivityPost : AppCompatActivity() {
     private fun initPost() {
         val postID = intent.getStringExtra("postID")
         val userID = intent.getStringExtra("userID")
+        userId = userID.toString()
+        println(userId)
         val currentUID = Firebase.auth.currentUser?.uid
+
 
         // Firestore에서 게시글 내용 불러오기
         postID?.let {
@@ -71,7 +76,9 @@ class ActivityPost : AppCompatActivity() {
 
         // 쪽지 보내기 버튼
         binding.btnChat.setOnClickListener {
-//            startActivity(Intent(this, ActivityChat::class.java))
+            startActivity(Intent(this, ActivityChat::class.java).apply {
+                putExtra("userID", userId)
+            })
         }
     }
 }
