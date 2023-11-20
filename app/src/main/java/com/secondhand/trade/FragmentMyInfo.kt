@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.secondhand.trade.FunComp.Companion.logout
 import com.secondhand.trade.databinding.FragmentMyinfoBinding
 
 class FragmentMyInfo : Fragment() {
@@ -29,7 +30,7 @@ class FragmentMyInfo : Fragment() {
         // 로그아웃 버튼 클릭
         binding.btnLogout.setOnClickListener {
             // FunComp 클래스의 로그아웃 함수 실행
-            FunComp.logout(mainActivity,
+            logout(mainActivity,
                 onLogoutSuccess = {
                     startActivity(Intent(mainActivity, ActivityLogin::class.java)).also { mainActivity.finish() }
                 }
