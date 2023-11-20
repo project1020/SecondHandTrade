@@ -1,76 +1,51 @@
 package com.secondhand.trade
 
 import android.os.Bundle
-import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.secondhand.trade.databinding.ActivitySendBinding
+import com.secondhand.trade.databinding.ActivityChatBinding
 
 class ActivityChat : AppCompatActivity(){
-    private val binding by lazy { ActivitySendBinding.inflate(layoutInflater) }
-    private val db = FirebaseFirestore.getInstance()
-    var userId = "wwwwwwwwwww"
-    var currentuser =""
+    private val binding by lazy { ActivityChatBinding.inflate(layoutInflater) }
+    private val db by lazy {FirebaseFirestore.getInstance() }
 
-    private lateinit var messagetext: EditText
+    private val sellerUID by lazy { intent.getStringExtra("sellerUID") }
+    private val sellerProfileImage by lazy { intent.getStringExtra("sellerProfileImage") }
+    private val sellerNickName by lazy { intent.getStringExtra("sellerNickName") }
+    private val postTitle by lazy { intent.getStringExtra("postTitle") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        userId = intent.getStringExtra("userID").toString()
-        println(userId)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        messagetext = findViewById(R.id.messagetext)
-        initProfile()
-        binding.btnsend.setOnClickListener{
-            addItem()
-            finish()
+
+        binding.btnSend.setOnClickListener{
+            sendMessage()
         }
-    //
+
+        initView()
     }
 
-    private fun initProfile() {
-        Firebase.auth.currentUser?.let { user ->
-            getNickname(userId) { nickname, profileImage ->
-                Glide.with(this@ActivityChat).load(profileImage).into(binding.imgProfile)
-                binding.txtNickname.text = nickname
-
-            }
-            db.collection("users").document(user.uid).get().addOnCompleteListener{ task ->
-                if (task.isSuccessful) {
-                    currentuser = task.result.getString("nickname").toString()
-                }
-            }
-        }
+    private fun initView() {
+        sellerProfileImage?.let {Glide.with(this@ActivityChat).load(it).into(binding.imgProfile) }
+        sellerNickName?.let { binding.txtNickname.text = it }
+        postTitle?.let { binding.txtTitle.text = it }
     }
+    
+    // 쪽지 보내기 함수
+    private fun sendMessage() {
+        val itemMap = hashMapOf(
+            "sender" to Firebase.auth.currentUser?.uid,
+            "message" to binding.editMessage.text.toString()
+        )
 
-    // 로그인 되어있는 계정의 닉네임을 Firestore 데이터베이스에서 가져오는 함수
-    private fun getNickname(userId: String, onComplete: (String?, String?) -> Unit) {
-        db.collection("users").document(userId).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                var nickname = task.result.getString("nickname")
-                val profileImage = task.result.getString("profileImage")
-                onComplete(nickname+"님에게 메세지 보내기", profileImage)
-            } else {
-                onComplete(null, null)
-            }
-        }
-    }
-    private fun addItem() {
-        val receivedMessagesCollectionRef = db.collection("chats").document(userId).collection("receivedmessage")
-        Firebase.auth.currentUser?.let { user ->
-            db.collection("users").document(userId).get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val name = currentuser
-                    val messageinput = binding.messagetext.text.toString()
-                    val itemMap = hashMapOf(
-                        "sender" to name,
-                        "text" to messageinput
-                    )
-                    receivedMessagesCollectionRef.add(itemMap).addOnSuccessListener { }.addOnFailureListener {  }
-                }
+        sellerUID?.let {
+            db.collection("chats").document(it).collection("receivedmessage").add(itemMap).addOnSuccessListener {
+                Toast.makeText(this, "판매자에게 쪽지를 보냈습니다!", Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }
