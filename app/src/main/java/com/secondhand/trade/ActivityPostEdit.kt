@@ -6,7 +6,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ActivityFixArticle : AppCompatActivity() {
@@ -42,7 +41,6 @@ class ActivityFixArticle : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnModify).setOnClickListener {
             updateBoard()
-
         }
 
     }

@@ -2,7 +2,6 @@ package com.secondhand.trade
 
 import android.os.Bundle
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 //import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +21,7 @@ data class Articles (
     )
 }
 
-class ActivityArticle : AppCompatActivity() {
+class ActivityPostRegister : AppCompatActivity() {
     private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }
     private val editContent by lazy { findViewById<EditText>(R.id.editContent) }
     private val editPrice by lazy { findViewById<EditText>(R.id.editPrice) }
