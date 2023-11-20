@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ActivityFixArticle : AppCompatActivity() {
+class ActivityPostEdit : AppCompatActivity() {
     private val fixTitle by lazy { findViewById<EditText>(R.id.editTitleFix) }
     private val fixContent by lazy { findViewById<EditText>(R.id.editContentFix) }
     private val fixPrice by lazy { findViewById<EditText>(R.id.editPriceFix) }

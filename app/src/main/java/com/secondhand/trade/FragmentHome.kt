@@ -106,7 +106,7 @@ class FragmentHome : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         binding.fabHome.setOnClickListener {
-            startActivity(Intent(mainActivity, ActivityArticle::class.java))
+            startActivity(Intent(mainActivity, ActivityPostRegister::class.java))
         }
 
         // 당겨서 새로고침
@@ -174,7 +174,7 @@ class FragmentHome : Fragment() {
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-               startActivity(Intent(mainActivity, ActivityFixArticle::class.java).apply {
+               startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
                     putExtra("id", item.id)
                     putExtra("title", item.title)
                     putExtra("content", item.content)
