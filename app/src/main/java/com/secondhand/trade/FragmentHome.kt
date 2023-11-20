@@ -174,7 +174,7 @@ class FragmentHome : Fragment() {
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-               startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
+               startActivity(Intent(mainActivity, ActivityPostEdit::class.java).apply {
                     putExtra("id", item.id)
                     putExtra("title", item.title)
                     putExtra("content", item.content)
