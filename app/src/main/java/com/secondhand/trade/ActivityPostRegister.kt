@@ -28,7 +28,7 @@ class ActivityPostRegister : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article)
+        setContentView(R.layout.activity_post_register)
 
         imageAddButton.setOnClickListener {
             openGallery()

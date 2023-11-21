@@ -4,53 +4,60 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class ActivityPostEdit : AppCompatActivity() {
-    private val fixTitle by lazy { findViewById<EditText>(R.id.editTitleFix) }
-    private val fixContent by lazy { findViewById<EditText>(R.id.editContentFix) }
-    private val fixPrice by lazy { findViewById<EditText>(R.id.editPriceFix) }
-    private val fixSoldOut by lazy { findViewById<CheckBox>(R.id.isSoldOutFix) }
+    private val editTitleFix by lazy { findViewById<EditText>(R.id.editTitleFix) }
+    private val editContentFix by lazy { findViewById<EditText>(R.id.editContentFix) }
+    private val editPriceFix by lazy { findViewById<EditText>(R.id.editPriceFix) }
+    private val isSoldOutFix by lazy { findViewById<CheckBox>(R.id.isSoldOutFix) }
     //private val fixdate by lazy { findViewById<EditText>(R.id.editDateFix) }
-    private val userIdFix by lazy { findViewById<TextView>(R.id.userIDFix) }
-    //private val imageSelect by lazy { findViewById<ImageView>(R.id.photoImageView) }
+    private val userIDFix by lazy { findViewById<TextView>(R.id.userIDFix) }
+    private val editImage by lazy { findViewById<ImageView>(R.id.editImageView) }
     private val firestore = FirebaseFirestore.getInstance()
     private val board = firestore.collection("board_test")
+    private var imageUrl = intent.getStringExtra("imageUrl")
+    private val storage = FirebaseStorage.getInstance()
+    private val imageRef = storage.reference.child("images")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_fix_article)
+        setContentView(R.layout.activity_post_edit)
 
         val title = intent.getStringExtra("title")
         val content = intent.getStringExtra("content")
         val price = intent.getIntExtra("price", 0)
         //val date = intent.getSerializableExtra("date") as? Timestamp
-        val image = intent.getStringExtra("image")
+        val imageUrl = intent.getStringExtra("imageUrl")
         val isSoldOut = intent.getBooleanExtra("isSoldOut", false)
         val userID = intent.getStringExtra("userID")
         val id = intent.getStringExtra("id")
 
-        fixTitle.setText(title.toString())
-        fixContent.setText(content.toString())
-        fixPrice.setText(price.toString())
-        fixSoldOut.isChecked = isSoldOut
+        editTitleFix.setText(title.toString())
+        editContentFix.setText(content.toString())
+        editPriceFix.setText(price.toString())
+        isSoldOutFix.isChecked = isSoldOut
         //fixdate.setText(date.toString())
-        userIdFix.text = userID
+        userIDFix.text = userID
 
         findViewById<Button>(R.id.btnModify).setOnClickListener {
             updateBoard()
         }
 
     }
-
+    
     private fun updateBoard() {    // db에 값을 수정하는 함수
-        val title = fixTitle.text.toString()
-        val content = fixContent.text.toString()
-        val price = fixPrice.text.toString().toInt()
-        val isSoldOut = fixSoldOut.isChecked
-        val userId = userIdFix.text.toString()
+        val title = editTitleFix.text.toString()
+        val content = editContentFix.text.toString()
+        val price = editPriceFix.text.toString().toInt()
+        val isSoldOut = isSoldOutFix.isChecked
+        val userId = userIDFix.text.toString()
         val id = intent.getStringExtra("id")
 
 
@@ -59,7 +66,7 @@ class ActivityPostEdit : AppCompatActivity() {
             "price" to price,
             "content" to content,
             "isSoldOut" to isSoldOut,
-            //"imageUrl" to imageurl
+            "imageUrl" to imageUrl,
             "userID" to userId
         )
         board.document(id.toString()).update(dbMap as Map<String, Any>)
@@ -68,5 +75,19 @@ class ActivityPostEdit : AppCompatActivity() {
             }.addOnFailureListener {  }
     }
 
+    private fun displayImage(imageUrl: String) {
+        val imageStorageRef = imageRef.child(imageUrl)
+        imageStorageRef.downloadUrl
+            .addOnSuccessListener { uri ->
+                val options = RequestOptions()
+
+                Glide.with(this)
+                    .load(uri)
+                    .apply(options)
+                    .into(editImage)
+            }
+            .addOnFailureListener {
+            }
+    }
 
 }
