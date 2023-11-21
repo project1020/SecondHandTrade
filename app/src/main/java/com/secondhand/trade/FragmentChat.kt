@@ -1,6 +1,7 @@
 package com.secondhand.trade
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -81,7 +82,12 @@ class FragmentChat : Fragment() {
         }
 
         chatAdapter.setOnItemClickListener { item, _ ->
-
+            startActivity(Intent(mainActivity, ActivityChatReceive::class.java).apply {
+                putExtra("profileImage", item.profileImage)
+                putExtra("nickname", item.nickname)
+                putExtra("date", item.date)
+                putExtra("message", item.message)
+            })
         }
     }
 

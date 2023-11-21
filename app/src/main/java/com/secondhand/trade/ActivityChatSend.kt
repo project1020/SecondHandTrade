@@ -7,11 +7,11 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.secondhand.trade.databinding.ActivityChatBinding
+import com.secondhand.trade.databinding.ActivityChatSendBinding
 import java.util.Date
 
-class ActivityChat : AppCompatActivity(){
-    private val binding by lazy { ActivityChatBinding.inflate(layoutInflater) }
+class ActivityChatSend : AppCompatActivity(){
+    private val binding by lazy { ActivityChatSendBinding.inflate(layoutInflater) }
 
     private val sellerUID by lazy { intent.getStringExtra("sellerUID") }
     private val sellerProfileImage by lazy { intent.getStringExtra("sellerProfileImage") }
@@ -30,7 +30,7 @@ class ActivityChat : AppCompatActivity(){
     }
 
     private fun initView() {
-        sellerProfileImage?.let {Glide.with(this@ActivityChat).load(it).into(binding.imgProfile) }
+        sellerProfileImage?.let {Glide.with(this@ActivityChatSend).load(it).into(binding.imgProfile) }
         sellerNickName?.let { binding.txtNickname.text = it }
         postTitle?.let { binding.txtTitle.text = it }
     }
