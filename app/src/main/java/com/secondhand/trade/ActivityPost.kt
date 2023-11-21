@@ -20,6 +20,7 @@ class ActivityPost : AppCompatActivity() {
 
     private val postID by lazy { intent.getStringExtra("postID") }
     private var postTitle: String? = null
+    private var postImage: String? = null
 
     private val sellerUID by lazy { intent.getStringExtra("userID") }
     private var sellerProfileImage: String? = null
@@ -30,7 +31,7 @@ class ActivityPost : AppCompatActivity() {
         setContentView(binding.root)
 
         initPost()
-        onButtonClick()
+        onWidgetClick()
     }
 
     // 게시글 내용 표시 함수
@@ -40,8 +41,9 @@ class ActivityPost : AppCompatActivity() {
         // Firestore에서 게시글 내용 불러오기
         postID?.let {
             firestore.collection("board_test").document(it).get().addOnSuccessListener { task ->
+                postImage = task.getString("image")
                 postTitle = task.getString("title")
-                Glide.with(this).load(task.getString("image")).placeholder(whitePlaceHolderForGlide(this, 10, 10)).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(binding.imgPost)
+                Glide.with(this).load(postImage).placeholder(whitePlaceHolderForGlide(this, 10, 10)).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(binding.imgPost)
                 binding.txtTitle.text = postTitle
                 binding.txtDate.text = getTimeAgo(task.getTimestamp("date")?.toDate())
                 binding.txtContent.text = task.getString("content")
@@ -72,8 +74,8 @@ class ActivityPost : AppCompatActivity() {
         }
     }
 
-    // 버튼 클릭 이벤트 함수
-    private fun onButtonClick() {
+    // 위젯 클릭 이벤트 함수
+    private fun onWidgetClick() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
 //            startActivity(Intent(this, ActivityPostEdit::class.java))
@@ -81,11 +83,17 @@ class ActivityPost : AppCompatActivity() {
 
         // 쪽지 보내기 버튼
         binding.btnChat.setOnClickListener {
-            startActivity(Intent(this, ActivityChat::class.java).apply {
+            startActivity(Intent(this, ActivityChatSend::class.java).apply {
                 putExtra("sellerUID", sellerUID)
                 putExtra("sellerProfileImage", sellerProfileImage)
                 putExtra("sellerNickName", sellerNickName)
                 putExtra("postTitle", postTitle)
+            })
+        }
+
+        binding.imgPost.setOnClickListener {
+            startActivity(Intent(this, ActivityPostImage::class.java).apply {
+                putExtra("postImage", postImage)
             })
         }
     }

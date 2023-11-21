@@ -35,9 +35,15 @@
             android:name=".ActivityPost"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ActivityChat"
+            android:name=".ActivityPostImage"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityChatSend"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ActivityChatReceive"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ActivityFixArticle"
             android:screenOrientation="portrait" />
