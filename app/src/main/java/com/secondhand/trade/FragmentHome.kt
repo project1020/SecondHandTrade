@@ -32,7 +32,7 @@ class FragmentHome : Fragment() {
 
     private val viewModel by activityViewModels<HomeFilterViewModel>()
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val db by lazy { FirebaseFirestore.getInstance() }
 
     private var searchQuery: String? = null
     private var lastItem: DocumentSnapshot? = null
@@ -79,17 +79,17 @@ class FragmentHome : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                 when (menuItem.itemId) {
-                     R.id.menuFilter -> {
-                         // 필터 다이얼로그 띄우기
-                         DialogHome(
-                             onApply = {
-                                 initItemList()
-                             },
-                             onCancel = {}
-                         ).show(childFragmentManager, "DialogHome")
-                     }
-                 }
+                when (menuItem.itemId) {
+                    R.id.menuFilter -> {
+                        // 필터 다이얼로그 띄우기
+                        DialogHome(
+                            onApply = {
+                                initItemList()
+                            },
+                            onCancel = {}
+                        ).show(childFragmentManager, "DialogHome")
+                    }
+                }
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -99,11 +99,14 @@ class FragmentHome : Fragment() {
 //        }
 
         // 당겨서 새로고침
-        binding.swipeHome.setOnRefreshListener {
-            searchQuery = null
-            homeAdapter.itemList.clear()
-            searchMenuItem.collapseActionView()
-            initItemList()
+        binding.swipeHome.apply {
+            setColorSchemeResources(R.color.colorPrimary)
+            setOnRefreshListener {
+                searchQuery = null
+                homeAdapter.itemList.clear()
+                searchMenuItem.collapseActionView()
+                initItemList()
+            }
         }
 
         initViewModel()
@@ -129,36 +132,36 @@ class FragmentHome : Fragment() {
 
         binding.recyclerHome.apply {
             adapter = homeAdapter
-            addItemDecoration(RecyclerViewItemDecorator(5)) // 아이템 간격 설정
+            addItemDecoration(ItemDecoratorDividerPadding(5)) // 아이템 간격 설정
             setHasFixedSize(true) // 아이템 크기가 고정되어 있음을 명시
             itemAnimator = null // 아이템 변경 애니메이션 삭제 (깜빡임 방지)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    
+
                     // FloatingActionButton 확장 및 축소
                     if (dy > 0 && fabHome.isExtended) { // 위로 스크롤
                         fabHome.shrink() // FAB 축소
                     } else if (dy < 0 && !fabHome.isExtended) { // 아래로 스크롤
                         fabHome.extend() // FAB 확장
                     }
-                    
+
                     // 맨 아래로 스크롤 시 다음 목록 가져오기
-                    val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
-                    val itemTotalCount = recyclerView.adapter!!.itemCount - 1
-                    if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
+                    val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager?)?.findLastCompletelyVisibleItemPosition()
+                    val itemTotalCount = recyclerView.adapter?.itemCount?.minus(1)
+                    if (lastVisibleItemPosition == itemTotalCount) {
                         // 다음 목록 가져오기
                         if (!isLoading && !isLastPage)
-                            loadNextItem()
+                            loadNextItemList()
                     }
                 }
             })
 
             homeAdapter.setOnItemClickListener { item, _ ->
-               startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
+                startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
                     putExtra("postID", item.id)
                     putExtra("userID", item.userID)
-               })
+                })
             }
         }
     }
@@ -168,7 +171,7 @@ class FragmentHome : Fragment() {
         binding.swipeHome.isRefreshing = true // 로딩 시 인디케이터 보이기
         isLastPage = false
 
-        val filteredQuery = firestore.collection("board_test").let {
+        val filteredQuery = db.collection("board_test").let {
             var baseQuery: Query = it // 기본 쿼리 선언
 
             // 판매 여부 필터링
@@ -213,13 +216,13 @@ class FragmentHome : Fragment() {
     }
 
     // 다음 아이템 가져오기
-    private fun loadNextItem() {
+    private fun loadNextItemList() {
         if (isLoading) return
         isLoading = true
         homeAdapter.setLoading(true)
 
         lastItem?.let { documentSnapshot ->
-            val filteredQuery = firestore.collection("board_test").let { collectionReference ->
+            val filteredQuery = db.collection("board_test").let { collectionReference ->
                 var baseQuery: Query = collectionReference
 
                 when {

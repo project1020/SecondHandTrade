@@ -7,31 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.Timestamp
-import com.secondhand.trade.FunComp.Companion.formatNumber
 import com.secondhand.trade.FunComp.Companion.getTimeAgo
-import com.secondhand.trade.FunComp.Companion.whitePlaceHolderForGlide
 import com.secondhand.trade.databinding.ProgressbarRecyclerviewBinding
-import com.secondhand.trade.databinding.RowHomeBinding
+import com.secondhand.trade.databinding.RowChatBinding
 
-data class DataHome(
-    val id : String?,
-    val title : String?,
-    val content : String?,
-    val price : Int?,
-    val date: Timestamp?,
-    val userID : String?,
-    val image : String?,
-    val isSoldOut : Boolean?
+data class DataChat(
+    val profileImage : String?,
+    val nickname : String?,
+    val message : String?,
+    val date : Timestamp?
 )
 
-class AdapterHome(private val context: Context, private val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var itemList = mutableListOf<DataHome>()
-    private var onItemClickListener: ((DataHome, Int) -> Unit)? = null
+class AdapterChat(private val context: Context, private val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var itemList = mutableListOf<DataChat>()
+    private var onItemClickListener: ((DataChat, Int) -> Unit)? = null
     private var isLoading = false
 
     companion object {
@@ -49,8 +42,8 @@ class AdapterHome(private val context: Context, private val recyclerView: Recycl
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_TYPE_ITEM) {
-            val bindingHome = RowHomeBinding.inflate(LayoutInflater.from(context), parent, false)
-            ViewHolder(bindingHome)
+            val bindingChat = RowChatBinding.inflate(LayoutInflater.from(context), parent, false)
+            ViewHolder(bindingChat)
         } else {
             val bindingProgress = ProgressbarRecyclerviewBinding.inflate(LayoutInflater.from(context), parent, false)
             LoadingViewHolder(bindingProgress)
@@ -70,7 +63,7 @@ class AdapterHome(private val context: Context, private val recyclerView: Recycl
         return if (position == itemList.size) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
 
-    inner class ViewHolder(private val binding: RowHomeBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: RowChatBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
                 val position = adapterPosition
@@ -80,16 +73,11 @@ class AdapterHome(private val context: Context, private val recyclerView: Recycl
             }
         }
 
-        fun bind(item: DataHome) {
-            Glide.with(itemView).load(item.image).placeholder(whitePlaceHolderForGlide(context, 10, 10)).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).centerCrop().sizeMultiplier(0.5f).into(binding.imgProduct)
-            binding.txtProduct.text = item.title
-            binding.txtPrice.text = "${item.price?.let { formatNumber(it) }}원"
+        fun bind(item: DataChat) {
+            Glide.with(itemView).load(item.profileImage).diskCacheStrategy(DiskCacheStrategy.NONE).into(binding.imgProfile)
+            binding.txtNickname.text = item.nickname
+            binding.txtMessage.text = item.message
             binding.txtDate.text = getTimeAgo(item.date?.toDate())
-            if (item.isSoldOut == true) {
-                binding.viewStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
-            } else {
-                binding.viewStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
-            }
         }
     }
 
@@ -97,7 +85,7 @@ class AdapterHome(private val context: Context, private val recyclerView: Recycl
         val progressBar: ProgressBar = binding.progressRecycler
     }
 
-    fun setOnItemClickListener(listener: (DataHome, Int) -> Unit) {
+    fun setOnItemClickListener(listener: (DataChat, Int) -> Unit) {
         onItemClickListener = listener
     }
 

@@ -130,11 +130,11 @@ class ActivityRegister : AppCompatActivity() {
 
         bottomSheetView.findViewById<RecyclerView>(R.id.recyclerRegister).apply {
             layoutManager = LinearLayoutManager(this@ActivityRegister, LinearLayoutManager.HORIZONTAL, false)
-            addItemDecoration(RecyclerViewItemDecorator(20))
+            addItemDecoration(ItemDecoratorDividerPadding(20))
             setHasFixedSize(true)
             adapter = adapterRegister
         }
-        
+
         getProfileFromStorage { imageList ->
             // 가져온 이미지 목록을 adapter에 추가
             adapterRegister.itemList = imageList.map { DataRegister(it.toString()) }.toMutableList()
