@@ -1,34 +1,47 @@
 package com.secondhand.trade
 
-import android.graphics.BitmapFactory
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 class ActivityPostRegister : AppCompatActivity() {
     private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }
     private val editContent by lazy { findViewById<EditText>(R.id.editContent) }
     private val editPrice by lazy { findViewById<EditText>(R.id.editPrice) }
-    private val imageView by lazy { findViewById<ImageView>(R.id.photoImageView) }
+    private val imageAddButton by lazy { findViewById<Button>(R.id.imageAddButton) }
+    private val photoImageView by lazy { findViewById<ImageView>(R.id.photoImageView) }
     private val firestore = FirebaseFirestore.getInstance()
     private val board = firestore.collection("board_test")
+
+    private val PICK_IMAGE_REQUEST = 1
+    private var selectedImageUri: Uri? = null
+    private var isImageUploaded = false
+    private var imageUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_article)
 
-        findViewById<Button>(R.id.imageAddButton).setOnClickListener {
-            displayImage()
+        imageAddButton.setOnClickListener {
+            openGallery()
         }
 
         findViewById<Button>(R.id.btnSubmit).setOnClickListener {
-            addBoard()
-            finish()
+            if (selectedImageUri != null) {
+                uploadImage(selectedImageUri!!)
+            } else {
+                addBoard()
+                finish()
+            }
+
         }
     }
 
@@ -40,26 +53,53 @@ class ActivityPostRegister : AppCompatActivity() {
         val dbMap = hashMapOf(
             "title" to title,
             "price" to price,
-            "content" to content
+            "content" to content,
+            "imageUrl" to imageUrl
         )
         board.add(dbMap)
             .addOnSuccessListener {
             }
-            .addOnFailureListener { }
+            .addOnFailureListener {
+            }
     }
 
-    private fun displayImage() {
-        val storageRef = FirebaseStorage.getInstance("gs://secondhandtrade-e2a57.appspot.com").reference
-        val imageRef = storageRef.child("image_product")
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
 
-        val ONE_MEGABYTE = 1024 * 1024.toLong()
-        imageRef.getBytes(ONE_MEGABYTE)
-            .addOnSuccessListener { bytes ->
-                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                imageView.setImageBitmap(bitmap)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            val imageUri = data?.data
+            if (imageUri != null) {
+                selectedImageUri = imageUri
+                photoImageView.setImageURI(imageUri)
+            }
+        }
+    }
+
+    private fun uploadImage(imageUri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imagesRef = storageRef.child("image_product/${UUID.randomUUID()}.jpg")
+
+        imagesRef.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                imagesRef.downloadUrl.addOnSuccessListener { uri ->
+                    imageUrl = uri.toString()
+                    isImageUploaded = true
+                    if (isImageUploaded) {
+                        addBoard()
+                        finish()
+                    }
+                }.addOnFailureListener { exception ->
+                    // URL 가져오기 실패
+                }
             }
             .addOnFailureListener { exception ->
-                // 이미지 다운로드 실패 시 처리할 내용을 작성합니다.
+                // 이미지 업로드 실패
             }
     }
 }
