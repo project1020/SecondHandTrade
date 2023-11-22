@@ -6,14 +6,17 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -55,7 +58,7 @@ class FunComp {
             return BitmapDrawable(context.resources, bitmap)
         }
 
-        // 이미지 전환 애니메이션
+        // Glide 사용시 이미지 전환 애니메이션을 정상적으로 나타내기 위한 함수
         fun ImageView.transitionWithGlide(context: Context, url: String?, onLoadingFinished: () -> Unit = {}) {
             val listener = object : RequestListener<Drawable> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
@@ -102,6 +105,11 @@ class FunComp {
 
             // 날짜가 null일 경우 빈 문자열 반환
             return ""
+        }
+
+        fun EditText.clearErrorOnTextChangedAndFocus(textInputLayout: TextInputLayout) {
+            addTextChangedListener(onTextChanged = { _, _, _, _, -> textInputLayout.error = null })
+            setOnFocusChangeListener { _, hasFocus -> if (hasFocus) textInputLayout.error = null }
         }
     }
 }
