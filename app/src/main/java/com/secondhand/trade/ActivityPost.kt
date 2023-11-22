@@ -48,6 +48,11 @@ class ActivityPost : AppCompatActivity() {
             firestore.collection("board_test").document(postID).get().addOnSuccessListener { document ->
                 postImage = document.getString("image")
                 postTitle = document.getString("title")
+                postContent = document.getString("content")
+                postPrice = document.getLong("price")?.toInt()
+                postSoldOut = document.getBoolean("isSoldOut")
+
+
                 Glide.with(this).load(postImage).placeholder(whitePlaceHolderForGlide(this, 10, 10)).into(binding.imgPost)
                 binding.txtTitle.text = postTitle
                 binding.txtDate.text = getTimeAgo(document.getTimestamp("date")?.toDate())
@@ -90,7 +95,7 @@ class ActivityPost : AppCompatActivity() {
                 putExtra("isSoldOut", postSoldOut)
                 putExtra("userID", sellerUID)
                 putExtra("content", postContent)
-                //putExtra("date", getTimeAgo(item.date?.toDate()))
+                putExtra("id", postID)
 
             })
 
