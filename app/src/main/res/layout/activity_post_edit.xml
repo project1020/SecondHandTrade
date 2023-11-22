@@ -88,17 +88,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editContentFix" />
 
-    <EditText
-        android:id="@+id/editDateFix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="time"
-        android:inputType="date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/userIDFix"
-        tool:layout_editor_absoluteY="86dp" />
-
     <TextView
         android:id="@+id/userIDFix"
         android:layout_width="100dp"
