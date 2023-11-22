@@ -113,20 +113,20 @@
         android:id="@+id/editImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageEditButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editPriceFix"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnModify"
+        app:layout_constraintTop_toBottomOf="@+id/imageEditButton"
+        tool:layout_editor_absoluteX="141dp"
         tool:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/imageEditButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginTop="16dp"
         android:text="이미지 수정하기"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isSoldOutFix" />
+        app:layout_constraintEnd_toStartOf="@+id/isSoldOutFix"
+        app:layout_constraintStart_toEndOf="@+id/editPriceFix"
+        app:layout_constraintTop_toBottomOf="@+id/editContentFix" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

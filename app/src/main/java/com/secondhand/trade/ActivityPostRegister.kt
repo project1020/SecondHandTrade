@@ -24,7 +24,7 @@ class ActivityPostRegister : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1
     private var selectedImageUri: Uri? = null
     private var isImageUploaded = false
-    private var imageUrl: String? = null
+    private var image: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class ActivityPostRegister : AppCompatActivity() {
             "title" to title,
             "price" to price,
             "content" to content,
-            "imageUrl" to imageUrl
+            "imageUrl" to image
         )
         board.add(dbMap)
             .addOnSuccessListener {
@@ -88,7 +88,7 @@ class ActivityPostRegister : AppCompatActivity() {
         imagesRef.putFile(imageUri)
             .addOnSuccessListener { taskSnapshot ->
                 imagesRef.downloadUrl.addOnSuccessListener { uri ->
-                    imageUrl = uri.toString()
+                    image = uri.toString()
                     isImageUploaded = true
                     if (isImageUploaded) {
                         addBoard()
