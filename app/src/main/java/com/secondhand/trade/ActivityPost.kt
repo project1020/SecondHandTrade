@@ -1,5 +1,6 @@
 package com.secondhand.trade
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -91,10 +92,12 @@ class ActivityPost : AppCompatActivity() {
             })
         }
 
+        // 이미지
         binding.imgPost.setOnClickListener {
+            val options  = ActivityOptions.makeSceneTransitionAnimation(this, binding.imgPost, "transitionPostImage").toBundle()
             startActivity(Intent(this, ActivityPostImage::class.java).apply {
                 putExtra("postImage", postImage)
-            })
+            }, options)
         }
     }
 }

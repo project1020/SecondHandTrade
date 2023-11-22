@@ -5,7 +5,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -45,6 +53,27 @@ class FunComp {
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             bitmap.eraseColor(Color.WHITE)
             return BitmapDrawable(context.resources, bitmap)
+        }
+
+        // 이미지 전환 애니메이션
+        fun ImageView.transitionWithGlide(context: Context, url: String?, onLoadingFinished: () -> Unit = {}) {
+            val listener = object : RequestListener<Drawable> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+                    onLoadingFinished()
+                    return false
+                }
+
+                override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>?, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    onLoadingFinished()
+                    return false
+                }
+            }
+
+            Glide.with(this)
+                .load(url)
+                .apply(RequestOptions().dontTransform().placeholder(whitePlaceHolderForGlide(context, 10, 10)))
+                .listener(listener)
+                .into(this)
         }
 
         // 얼마 전에 올라온 글인지 글씨로 반환해주는 함수
