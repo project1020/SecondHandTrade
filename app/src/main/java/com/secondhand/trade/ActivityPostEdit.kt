@@ -46,7 +46,6 @@ class ActivityPostEdit : AppCompatActivity() {
         //val date = intent.getSerializableExtra("date") as? Timestamp
         val isSoldOut = intent.getBooleanExtra("isSoldOut", false)
         val userID = intent.getStringExtra("userID")
-        val id = intent.getStringExtra("id")
         val image = intent.getStringExtra("image")
 
         editTitleFix.setText(title.toString())

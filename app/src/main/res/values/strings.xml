@@ -19,7 +19,10 @@
     <string name="str_register_exist_nickname">이미 사용 중인 닉네임입니다.</string>
     <string name="str_register_invalid_email">이메일 형식이 올바르지 않습니다.</string>
     <string name="str_register_invalid_password">비밀번호는 6자리 이상이어야 합니다.</string>
-
+    <!-- ActivityPost -->
+    <string name="str_post_price_won">%s원</string>
+    <string name="str_post_for_sale">거래가능</string>
+    <string name="str_post_sold_out">거래완료</string>
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - Layout - - - - - - - - - - - - - - - - - - - - - - -->

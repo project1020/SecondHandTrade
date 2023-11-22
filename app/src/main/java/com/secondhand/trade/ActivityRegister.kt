@@ -145,16 +145,8 @@ class ActivityRegister : AppCompatActivity() {
         binding.imgProfile.setOnClickListener {
             bottomSheetDialog.show()
         }
-
-        // recyclerview 아이템 클릭
-//        adapterRegister.setOnItemClickListener(object : AdapterRegister.OnItemClickListener {
-//            override fun onClick(v: View, position: Int) {
-//                // 프로필 이미지 변경
-//                Glide.with(this@ActivityRegister).load(adapterRegister.itemList[position].image).into(binding.imgProfile)
-//                profileImageUri = adapterRegister.itemList[position].image
-//                bottomSheetDialog.dismiss()
-//            }
-//        })
+        
+        // 프로필 이미지 선택
         adapterRegister.setOnItemClickListener { item, _ ->
             Glide.with(this@ActivityRegister).load(item.image).into(binding.imgProfile)
             profileImageUrl = item.image

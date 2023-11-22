@@ -22,6 +22,10 @@ class ActivityPost : AppCompatActivity() {
     private val postID by lazy { intent.getStringExtra("postID") }
     private var postTitle: String? = null
     private var postImage: String? = null
+    private var postContent: String? = null
+    private var postPrice: Int? = null
+    private var postSoldOut: Boolean? = false
+
 
     private val sellerUID by lazy { intent.getStringExtra("userID") }
     private var sellerProfileImage: String? = null
@@ -40,25 +44,25 @@ class ActivityPost : AppCompatActivity() {
         val currentUID = Firebase.auth.currentUser?.uid
 
         // Firestore에서 게시글 내용 불러오기
-        postID?.let {
-            firestore.collection("board_test").document(it).get().addOnSuccessListener { task ->
-                postImage = task.getString("image")
-                postTitle = task.getString("title")
-                Glide.with(this).load(postImage).placeholder(whitePlaceHolderForGlide(this, 10, 10)).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(binding.imgPost)
+        postID?.let { postID ->
+            firestore.collection("board_test").document(postID).get().addOnSuccessListener { document ->
+                postImage = document.getString("image")
+                postTitle = document.getString("title")
+                Glide.with(this).load(postImage).placeholder(whitePlaceHolderForGlide(this, 10, 10)).into(binding.imgPost)
                 binding.txtTitle.text = postTitle
-                binding.txtDate.text = getTimeAgo(task.getTimestamp("date")?.toDate())
-                binding.txtContent.text = task.getString("content")
-                binding.txtPrice.text = "${task.getLong("price")?.let { price -> formatNumber(price.toInt()) }}원"
-                binding.txtIsSoldOut.text = if (task.getBoolean("isSoldOut") == true) "거래완료" else "거래가능"
-                binding.btnChat.isEnabled = task.getBoolean("isSoldOut") == false
+                binding.txtDate.text = getTimeAgo(document.getTimestamp("date")?.toDate())
+                binding.txtContent.text = document.getString("content")
+                binding.txtPrice.text = getString(R.string.str_post_price_won, document.getLong("price")?.let { formatNumber(it.toInt()) })
+                binding.txtIsSoldOut.text = if (document.getBoolean("isSoldOut") == true) getString(R.string.str_post_sold_out) else getString(R.string.str_post_for_sale)
+                binding.btnChat.isEnabled = document.getBoolean("isSoldOut") == false
             }
         }
 
         // Firestore에서 유저 정보 불러오기
         sellerUID?.let {
-            firestore.collection("users").document(it).get().addOnSuccessListener { task ->
-                sellerProfileImage = task.getString("profileImage")
-                sellerNickName = task.getString("nickname")
+            firestore.collection("users").document(it).get().addOnSuccessListener { document ->
+                sellerProfileImage = document.getString("profileImage")
+                sellerNickName = document.getString("nickname")
 
                 Glide.with(this).load(sellerProfileImage).into(binding.imgProfile)
                 binding.txtNickname.text = sellerNickName
@@ -79,7 +83,17 @@ class ActivityPost : AppCompatActivity() {
     private fun onWidgetClickListener() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
-//            startActivity(Intent(this, ActivityPostEdit::class.java))
+            startActivity(Intent(this, ActivityPostEdit::class.java).apply {
+                putExtra("title", postTitle)
+                putExtra("image", postImage)
+                putExtra("price", postPrice)
+                putExtra("isSoldOut", postSoldOut)
+                putExtra("userID", sellerUID)
+                putExtra("content", postContent)
+                //putExtra("date", getTimeAgo(item.date?.toDate()))
+
+            })
+
         }
 
         // 쪽지 보내기 버튼
