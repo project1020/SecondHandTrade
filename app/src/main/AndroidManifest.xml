@@ -35,6 +35,12 @@
             android:name=".ActivityPost"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ActivityPostEdit"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityPostRegister"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ActivityPostImage"
             android:screenOrientation="portrait" />
         <activity
@@ -43,9 +49,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ActivityChatReceive"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ActivityFixArticle"
             android:screenOrientation="portrait" />
     </application>
 </manifest>

@@ -94,9 +94,9 @@ class FragmentHome : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-//        binding.fabHome.setOnClickListener {
-//            startActivity(Intent(mainActivity, ActivityPostUpload::class.java))
-//        }
+        binding.fabHome.setOnClickListener {
+            startActivity(Intent(mainActivity, ActivityPostRegister::class.java))
+        }
 
         // 당겨서 새로고침
         binding.swipeHome.apply {
