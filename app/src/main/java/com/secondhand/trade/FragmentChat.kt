@@ -17,6 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
+import com.secondhand.trade.FunComp.Companion.getTimeAgo
 import com.secondhand.trade.databinding.FragmentChatBinding
 
 data class DataMessage(
@@ -85,7 +86,7 @@ class FragmentChat : Fragment() {
             startActivity(Intent(mainActivity, ActivityChatReceive::class.java).apply {
                 putExtra("profileImage", item.profileImage)
                 putExtra("nickname", item.nickname)
-                putExtra("date", item.date)
+                putExtra("date", getTimeAgo(item.date?.toDate()))
                 putExtra("message", item.message)
             })
         }
