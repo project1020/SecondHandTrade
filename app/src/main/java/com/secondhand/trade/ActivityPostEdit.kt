@@ -2,8 +2,6 @@ package com.secondhand.trade
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
@@ -13,11 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
+import java.util.Date
 import java.util.UUID
 
 class ActivityPostEdit : AppCompatActivity() {
@@ -35,6 +31,7 @@ class ActivityPostEdit : AppCompatActivity() {
     private val board = firestore.collection("board_test")
     private var isImageUploaded = false
     private var image: String? = null
+    private var price: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,26 +39,28 @@ class ActivityPostEdit : AppCompatActivity() {
 
         val title = intent.getStringExtra("title")
         val content = intent.getStringExtra("content")
-        val price = intent.getIntExtra("price", 0)
-        //val date = intent.getSerializableExtra("date") as? Timestamp
+            price = intent.getIntExtra("price", 0)
         val isSoldOut = intent.getBooleanExtra("isSoldOut", false)
         val userID = intent.getStringExtra("userID")
-        val image = intent.getStringExtra("image")
+            image = intent.getStringExtra("image")
 
         editTitleFix.setText(title.toString())
         editContentFix.setText(content.toString())
         editPriceFix.setText(price.toString())
         isSoldOutFix.isChecked = isSoldOut
-        //fixdate.setText(date.toString())
         userIDFix.text = userID
 
         val view = findViewById<ImageView>(R.id.editImageView)
-        val imageRef = Firebase.storage.getReferenceFromUrl("$image")
-        imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener {
-            val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-            view.setImageBitmap(bmp)
-        }?.addOnFailureListener{
-        }
+//        val imageRef = Firebase.storage.getReferenceFromUrl("$image")
+//        imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener {
+//            val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+//            view.setImageBitmap(bmp)
+//        }?.addOnFailureListener{
+//        }
+        Glide.with(this@ActivityPostEdit)
+            .load(image)
+            .into(view)
+
 
         findViewById<Button>(R.id.imageEditButton).setOnClickListener {
             openGallery()
@@ -93,7 +92,8 @@ class ActivityPostEdit : AppCompatActivity() {
             "content" to content,
             "isSoldOut" to isSoldOut,
             "image" to image,
-            "userID" to userId
+            "userID" to userId,
+            "date" to Date()
         )
         board.document(id.toString()).update(dbMap as Map<String, Any>)
             .addOnSuccessListener {
