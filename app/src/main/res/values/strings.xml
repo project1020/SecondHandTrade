@@ -1,19 +1,36 @@
 <resources>
-    <!--앱 이름-->
+    <!-- - - - - - - - - - - - - - - - - - - - - - 앱 이름 - - - - - - - - - - - - - - - - - - - - - - -->
     <string name="app_name">중고거래</string>
 
-    <!--class-->
-    <string name="str_customdialog_text_price">%1$s원</string>
 
-    <!--layout-->
-    <!--activity_login-->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - Class - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- ActivityRegister -->
+    <string name="str_register_input_nickname">닉네임을 입력해 주세요.</string>
+    <string name="str_register_input_birth">생년월일을 입력해 주세요.</string>
+    <string name="str_register_input_email">이메일을 입력해 주세요.</string>
+    <string name="str_register_input_password">비밀번호를 입력해 주세요.</string>
+    <string name="str_register_check_space">공백을 확인해 주세요.</string>
+    <string name="str_register_special_characters">특수문자는 사용이 불가능합니다.</string>
+    <string name="str_register_password_different">비밀번호가 일치하지 않습니다.</string>
+    <string name="str_register_register_success">회원가입에 성공하였습니다!</string>
+    <string name="str_register_register_fail">회원가입에 실패하였습니다. 다시 시도해주세요.</string>
+    <string name="str_register_exist_account">이미 존재하는 계정입니다.</string>
+    <string name="str_register_exist_nickname">이미 사용 중인 닉네임입니다.</string>
+    <string name="str_register_invalid_email">이메일 형식이 올바르지 않습니다.</string>
+    <string name="str_register_invalid_password">비밀번호는 6자리 이상이어야 합니다.</string>
+
+
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - Layout - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- activity_login -->
     <string name="str_login_edit_email">이메일</string>
     <string name="str_login_edit_password">비밀번호</string>
     <string name="str_login_switch_autologin">로그인 상태 유지</string>
     <string name="str_login_btn_login">로그인</string>
     <string name="str_login_txt_account">계정이 없으신가요?</string>
     <string name="str_login_txt_register"><u>회원가입</u></string>
-    <!--activity_register-->
+    <!-- activity_register -->
     <string name="str_register_edit_nickname">닉네임</string>
     <string name="str_register_edit_birth">생년월일</string>
     <string name="str_register_edit_email">이메일</string>
@@ -22,22 +39,22 @@
     <string name="str_register_btn_register">회원가입</string>
     <string name="str_register_txt_account">이미 계정이 있으신가요?</string>
     <string name="str_register_txt_login"><u>로그인</u></string>
-    <!--activity_post-->
+    <!-- activity_post -->
     <string name="str_post_btn_edit">수정하기</string>
     <string name="str_post_btn_chat">쪽지 보내기</string>
-    <!--activity_chat-->
+    <!-- activity_chat -->
     <string name="str_chat_edit_message">내용 입력</string>
     <string name="str_chat_btn_send">쪽지 보내기</string>
-    <!--fragment_home-->
+    <!-- fragment_home -->
     <string name="str_home_toolbar_title">중고거래</string>
     <string name="str_home_fab_post">물품 등록</string>
-    <!--fragment_myinfo-->
+    <!-- fragment_myinfo -->
     <string name="str_myinfo_txt_email">이메일</string>
     <string name="str_myinfo_txt_birth">생년월일</string>
     <string name="str_myinfo_btn_logout">로그아웃</string>
-    <!--bottomsheet_register-->
+    <!-- bottomsheet_register -->
     <string name="str_register_text_choose">프로필 캐릭터 선택</string>
-    <!--dialog_home-->
+    <!-- dialog_home -->
     <string name="str_home_txt_forsale">판매 여부</string>
     <string name="str_home_txt_warning">판매 여부를 선택해 주세요.</string>
     <string name="str_home_tgbtn_forsale">판매 중</string>
@@ -45,12 +62,14 @@
     <string name="str_home_btn_cancel">취소</string>
     <string name="str_home_btn_apply">적용</string>
 
-    <!--menu-->
-    <!--menu_main_bottombar_nav-->
+
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - Menu - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- menu_main_bottombar_nav -->
     <string name="str_main_bottombar_home">홈</string>
     <string name="str_main_bottombar_chat">쪽지</string>
     <string name="str_main_bottombar_myinfo">내 정보</string>
-    <!--menu_home_toolbar_item-->
+    <!-- menu_home_toolbar_item -->
     <string name="str_home_toolbar_search">검색</string>
     <string name="str_home_toolbar_filter">필터</string>
 </resources>
