@@ -1,5 +1,6 @@
 package com.secondhand.trade
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -31,7 +32,7 @@ class ActivityPost : AppCompatActivity() {
         setContentView(binding.root)
 
         initPost()
-        onWidgetClick()
+        onWidgetClickListener()
     }
 
     // 게시글 내용 표시 함수
@@ -59,7 +60,7 @@ class ActivityPost : AppCompatActivity() {
                 sellerProfileImage = task.getString("profileImage")
                 sellerNickName = task.getString("nickname")
 
-                Glide.with(this).load(sellerProfileImage).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).into(binding.imgProfile)
+                Glide.with(this).load(sellerProfileImage).into(binding.imgProfile)
                 binding.txtNickname.text = sellerNickName
             }
         }
@@ -74,8 +75,8 @@ class ActivityPost : AppCompatActivity() {
         }
     }
 
-    // 위젯 클릭 이벤트 함수
-    private fun onWidgetClick() {
+    // 위젯 클릭 리스너 함수
+    private fun onWidgetClickListener() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
 //            startActivity(Intent(this, ActivityPostEdit::class.java))
@@ -91,10 +92,12 @@ class ActivityPost : AppCompatActivity() {
             })
         }
 
+        // 이미지
         binding.imgPost.setOnClickListener {
+            val options  = ActivityOptions.makeSceneTransitionAnimation(this, binding.imgPost, "transitionPostImage").toBundle()
             startActivity(Intent(this, ActivityPostImage::class.java).apply {
                 putExtra("postImage", postImage)
-            })
+            }, options)
         }
     }
 }

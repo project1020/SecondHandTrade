@@ -33,6 +33,7 @@
                     android:layout_height="300dp"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
+                    android:transitionName="transitionPostImage"
                     app:layout_collapseMode="parallax" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
