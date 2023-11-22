@@ -8,8 +8,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import java.util.Date
 import java.util.UUID
 
 class ActivityPostRegister : AppCompatActivity() {
@@ -54,7 +57,11 @@ class ActivityPostRegister : AppCompatActivity() {
             "title" to title,
             "price" to price,
             "content" to content,
-            "imageUrl" to image
+            "isSoldOut" to false,
+            "image" to image,
+            "date" to Date(),
+            "userID" to Firebase.auth.currentUser?.uid
+
         )
         board.add(dbMap)
             .addOnSuccessListener {

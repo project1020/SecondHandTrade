@@ -22,6 +22,10 @@ class ActivityPost : AppCompatActivity() {
     private val postID by lazy { intent.getStringExtra("postID") }
     private var postTitle: String? = null
     private var postImage: String? = null
+    private var postContent: String? = null
+    private var postPrice: Int? = null
+    private var postSoldOut: Boolean? = false
+
 
     private val sellerUID by lazy { intent.getStringExtra("userID") }
     private var sellerProfileImage: String? = null
@@ -79,7 +83,17 @@ class ActivityPost : AppCompatActivity() {
     private fun onWidgetClickListener() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
-            startActivity(Intent(this, ActivityPostEdit::class.java))
+            startActivity(Intent(this, ActivityPostEdit::class.java).apply {
+                putExtra("title", postTitle)
+                putExtra("image", postImage)
+                putExtra("price", postPrice)
+                putExtra("isSoldOut", postSoldOut)
+                putExtra("userID", sellerUID)
+                putExtra("content", postContent)
+                //putExtra("date", getTimeAgo(item.date?.toDate()))
+
+            })
+
         }
 
         // 쪽지 보내기 버튼
