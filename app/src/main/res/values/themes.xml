@@ -16,6 +16,7 @@
         <item name="buttonStyle">@style/StyleButton</item>
         <item name="bottomSheetDialogTheme">@style/StyleBottomSheetDialog</item>
         <item name="android:datePickerDialogTheme">@style/StyleDatePickerDialog</item>
+        <item name="actionMenuTextColor">@color/dark_gray</item>
     </style>
 
     <!-- 커스텀 스타일 -->

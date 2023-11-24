@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -110,6 +112,39 @@ class FunComp {
         fun EditText.clearErrorOnTextChangedAndFocus(textInputLayout: TextInputLayout) {
             addTextChangedListener(onTextChanged = { _, _, _, _, -> textInputLayout.error = null })
             setOnFocusChangeListener { _, hasFocus -> if (hasFocus) textInputLayout.error = null }
+        }
+
+        fun formatEdittext(editText: EditText) {
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable) {
+                    editText.removeTextChangedListener(this) // 무한루프 방지
+
+                    if (s.isNotEmpty()) {
+                        val commaRemoved = s.toString().replace(",", "") // 쉼표 제거
+                        // 최대 길이 제한
+                        if (commaRemoved.length > 7) { // 7글자 초과 시
+                            val shortened = commaRemoved.substring(0, 7) // 7자리까지 자르기
+                            val numberFormatted = formatNumber(shortened.toInt()) // 3자리마다 쉼표 입력
+                            editText.setText(numberFormatted)
+                            editText.setSelection(editText.text.length) // 커서를 맨 뒤로 이동
+                        } else {
+                            if (s.toString().startsWith("00")) { // 앞자리가 0일 경우 0 연속으로 입력 방지
+                                editText.setText("0")
+                                editText.setSelection(editText.text.length)
+                            } else {
+                                val parsed = commaRemoved.toIntOrNull()
+                                val formatted = parsed?.let { formatNumber(it) } // 3자리마다 쉼표 입력
+                                editText.setText(formatted)
+                                editText.setSelection(editText.text.length) // 커서를 맨 뒤로 이동
+                            }
+                        }
+                    }
+
+                    editText.addTextChangedListener(this)
+                }
+            })
         }
     }
 }

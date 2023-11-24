@@ -1,112 +1,157 @@
 package com.secondhand.trade
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.webkit.MimeTypeMap
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.secondhand.trade.FunComp.Companion.formatEdittext
+import com.secondhand.trade.databinding.ActivityPostRegisterBinding
 import java.util.Date
 import java.util.UUID
 
 class ActivityPostRegister : AppCompatActivity() {
-    private val editTitle by lazy { findViewById<EditText>(R.id.editTitle) }
-    private val editContent by lazy { findViewById<EditText>(R.id.editContent) }
-    private val editPrice by lazy { findViewById<EditText>(R.id.editPrice) }
-    private val imageAddButton by lazy { findViewById<Button>(R.id.imageAddButton) }
-    private val photoImageView by lazy { findViewById<ImageView>(R.id.photoImageView) }
-    private val firestore = FirebaseFirestore.getInstance()
-    private val board = firestore.collection("board_test")
+    private val binding by lazy { ActivityPostRegisterBinding.inflate(layoutInflater) }
 
-    private val PICK_IMAGE_REQUEST = 1
-    private var selectedImageUri: Uri? = null
-    private var isImageUploaded = false
-    private var image: String? = null
+    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
+    private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
+    private val currentUserID by lazy { Firebase.auth.currentUser?.uid }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post_register)
+    private val imgProduct by lazy { binding.imgProduct }
+    private val editTitle by lazy { binding.editTitle }
+    private val editContent by lazy { binding.editContent }
+    private val editPrice by lazy { binding.editPrice }
+    private val cardImage by lazy { binding.cardImage }
+    private val imgAdd by lazy { binding.imgAdd }
+    private val imgEdit by lazy { binding.imgEdit }
+    private val progressIndicator by lazy { binding.progressRegister }
 
-        imageAddButton.setOnClickListener {
-            openGallery()
-        }
+    private var imageURI: Uri? = null
+    private var isUpdating = false
 
-        findViewById<Button>(R.id.btnSubmit).setOnClickListener {
-            if (selectedImageUri != null) {
-                uploadImage(selectedImageUri!!)
-            } else {
-                addBoard()
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if(!isUpdating)
                 finish()
-            }
-
         }
     }
 
-    private fun addBoard() {
-        val title = editTitle.text.toString()
-        val content = editContent.text.toString()
-        val price = editPrice.text.toString().toInt()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
 
-        val dbMap = hashMapOf(
-            "title" to title,
-            "price" to price,
-            "content" to content,
-            "isSoldOut" to false,
-            "image" to image,
+        onBackPressedDispatcher.addCallback(this, callback)
+
+        binding.toolbarRegister.apply {
+            setSupportActionBar(this)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        }
+
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_postregister_toolbar_item, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.menuRegister -> {
+                        uploadImage()
+                    }
+                }
+                return true
+            }
+        })
+
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK && it.data != null) {
+                imageURI = it.data?.data
+                imgAdd.visibility = View.GONE
+                imgEdit.visibility = View.VISIBLE
+                Glide.with(this).load(imageURI).into(imgProduct)
+            }
+        }
+
+        editPrice.apply { formatEdittext(this) }
+
+        cardImage.setOnClickListener {
+            openGallery()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                if(!isUpdating)
+                    finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun registerPost() {
+        val postMap = hashMapOf(
+            "image" to imageURI,
+            "title" to editTitle.text.toString(),
+            "content" to editContent.text.toString(),
+            "price" to editPrice.text.toString().replace(",", "").toInt(),
             "date" to Date(),
-            "userID" to Firebase.auth.currentUser?.uid
-
+            "isSoldOut" to false,
+            "userID" to currentUserID
         )
-        board.add(dbMap)
+
+        firebaseDB.collection("board_test").add(postMap)
             .addOnSuccessListener {
+                isUpdating = false
+                progressIndicator.visibility = View.GONE
+                Toast.makeText(this, "물품을 등록했습니다.", Toast.LENGTH_SHORT).show()
+                finish()
             }
             .addOnFailureListener {
+                progressIndicator.visibility = View.GONE
+                Toast.makeText(this, "물품 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            val imageUri = data?.data
-            if (imageUri != null) {
-                selectedImageUri = imageUri
-                photoImageView.setImageURI(imageUri)
-            }
+        val intent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"
         }
+        activityResultLauncher.launch(intent)
     }
 
-    private fun uploadImage(imageUri: Uri) {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val imagesRef = storageRef.child("image_product/${UUID.randomUUID()}.jpg")
+    private fun uploadImage() {
+        val fileExtension = MimeTypeMap.getFileExtensionFromUrl(imageURI.toString())
+        val storageRef = firebaseStorage.reference.child("image_product/${UUID.randomUUID()}.$fileExtension")
 
-        imagesRef.putFile(imageUri)
-            .addOnSuccessListener { taskSnapshot ->
-                imagesRef.downloadUrl.addOnSuccessListener { uri ->
-                    image = uri.toString()
-                    isImageUploaded = true
-                    if (isImageUploaded) {
-                        addBoard()
-                        finish()
+        isUpdating = true
+        progressIndicator.visibility = View.VISIBLE
+
+        imageURI?.let {
+            storageRef.putFile(imageURI!!)
+                .addOnSuccessListener {
+                    storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                        imageURI = downloadUri
+                        registerPost()
                     }
-                }.addOnFailureListener { exception ->
-                    // URL 가져오기 실패
                 }
-            }
-            .addOnFailureListener { exception ->
-                // 이미지 업로드 실패
-            }
+        }
     }
 }
