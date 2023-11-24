@@ -111,8 +111,12 @@ class FragmentHome : Fragment() {
 
         initViewModel()
         initRecyclerview()
-        initItemList()
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initItemList()
     }
 
     // ViewModel 값 변화 감지

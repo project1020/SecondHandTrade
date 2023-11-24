@@ -25,6 +25,7 @@
     <string name="str_post_sold_out">거래완료</string>
 
 
+
     <!-- - - - - - - - - - - - - - - - - - - - - - Layout - - - - - - - - - - - - - - - - - - - - - - -->
     <!-- activity_login -->
     <string name="str_login_edit_email">이메일</string>
@@ -45,6 +46,25 @@
     <!-- activity_post -->
     <string name="str_post_btn_edit">수정하기</string>
     <string name="str_post_btn_chat">쪽지 보내기</string>
+    <!-- activity_post_register -->
+    <string name="str_postregister_toolbar_title">물품 등록</string>
+    <string name="str_postregister_txt_title">제목</string>
+    <string name="str_postregister_edit_title">제목을 입력해주세요.</string>
+    <string name="str_postregister_txt_content">내용</string>
+    <string name="str_postregister_edit_content">내용을 입력해주세요.</string>
+    <string name="str_postregister_txt_price">가격</string>
+    <string name="str_postregister_edit_price">가격을 입력해주세요.</string>
+    <!-- activity_post_edit -->
+    <string name="str_postedit_toolbar_title">게시글 수정</string>
+    <string name="str_postedit_txt_title">제목</string>
+    <string name="str_postedit_edit_title">제목을 입력해주세요.</string>
+    <string name="str_postedit_txt_content">내용</string>
+    <string name="str_postedit_edit_content">내용을 입력해주세요.</string>
+    <string name="str_postedit_txt_price">가격</string>
+    <string name="str_postedit_edit_price">가격을 입력해주세요.</string>
+    <string name="str_postedit_txt_issoldout">판매 여부</string>
+    <string name="str_postedit_btn_forsale">판매 중</string>
+    <string name="str_postedit_btn_soldout">판매 완료</string>
     <!-- activity_chat -->
     <string name="str_chat_edit_message">내용 입력</string>
     <string name="str_chat_btn_send">쪽지 보내기</string>
@@ -75,4 +95,8 @@
     <!-- menu_home_toolbar_item -->
     <string name="str_home_toolbar_search">검색</string>
     <string name="str_home_toolbar_filter">필터</string>
+    <!-- menu_postregister_toolbar_item -->
+    <string name="str_postregister_toolbar_register">등록</string>
+    <!-- menu_postedit_toolbar_item -->
+    <string name="str_postedit_toolbar_edit">수정</string>
 </resources>

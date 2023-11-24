@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -20,12 +19,12 @@ class ActivityPost : AppCompatActivity() {
     private val firestore = FirebaseFirestore.getInstance()
 
     private val postID by lazy { intent.getStringExtra("postID") }
-    private var postTitle: String? = null
     private var postImage: String? = null
+    private var postTitle: String? = null
     private var postContent: String? = null
-    private var postPrice: Int? = null
-    private var postSoldOut: Boolean? = false
-
+    private var postDate: String? = null
+    private var postPrice: Long? = null
+    private var postIsSoldOut: Boolean? = false
 
     private val sellerUID by lazy { intent.getStringExtra("userID") }
     private var sellerProfileImage: String? = null
@@ -35,8 +34,12 @@ class ActivityPost : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        initPost()
         onWidgetClickListener()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initPost()
     }
 
     // 게시글 내용 표시 함수
@@ -49,17 +52,17 @@ class ActivityPost : AppCompatActivity() {
                 postImage = document.getString("image")
                 postTitle = document.getString("title")
                 postContent = document.getString("content")
-                postPrice = document.getLong("price")?.toInt()
-                postSoldOut = document.getBoolean("isSoldOut")
-
+                postPrice = document.getLong("price")
+                postDate = getTimeAgo(document.getTimestamp("date")?.toDate())
+                postIsSoldOut = document.getBoolean("isSoldOut")
 
                 Glide.with(this).load(postImage).placeholder(whitePlaceHolderForGlide(this, 10, 10)).into(binding.imgPost)
                 binding.txtTitle.text = postTitle
-                binding.txtDate.text = getTimeAgo(document.getTimestamp("date")?.toDate())
-                binding.txtContent.text = document.getString("content")
-                binding.txtPrice.text = getString(R.string.str_post_price_won, document.getLong("price")?.let { formatNumber(it.toInt()) })
-                binding.txtIsSoldOut.text = if (document.getBoolean("isSoldOut") == true) getString(R.string.str_post_sold_out) else getString(R.string.str_post_for_sale)
-                binding.btnChat.isEnabled = document.getBoolean("isSoldOut") == false
+                binding.txtContent.text = postContent
+                binding.txtPrice.text = getString(R.string.str_post_price_won, postPrice?.let { formatNumber(it.toInt()) })
+                binding.txtDate.text = postDate
+                binding.txtIsSoldOut.text = if (postIsSoldOut == true) getString(R.string.str_post_sold_out) else getString(R.string.str_post_for_sale)
+                binding.btnChat.isEnabled = postIsSoldOut == false
             }
         }
 
@@ -89,25 +92,22 @@ class ActivityPost : AppCompatActivity() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
             startActivity(Intent(this, ActivityPostEdit::class.java).apply {
-                putExtra("title", postTitle)
-                putExtra("image", postImage)
-                putExtra("price", postPrice)
-                putExtra("isSoldOut", postSoldOut)
-                putExtra("userID", sellerUID)
-                putExtra("content", postContent)
-                putExtra("id", postID)
-
+                putExtra("postImage", postImage)
+                putExtra("postTitle", postTitle)
+                putExtra("postContent", postContent)
+                putExtra("postPrice", postPrice?.toInt())
+                putExtra("postIsSoldOut", postIsSoldOut)
+                putExtra("postID", postID)
             })
-
         }
 
         // 쪽지 보내기 버튼
         binding.btnChat.setOnClickListener {
             startActivity(Intent(this, ActivityChatSend::class.java).apply {
-                putExtra("sellerUID", sellerUID)
                 putExtra("sellerProfileImage", sellerProfileImage)
-                putExtra("sellerNickName", sellerNickName)
                 putExtra("postTitle", postTitle)
+                putExtra("sellerUID", sellerUID)
+                putExtra("sellerNickName", sellerNickName)
             })
         }
 
