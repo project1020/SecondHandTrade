@@ -4,7 +4,7 @@
         <ripple android:color="?android:attr/colorControlHighlight">
             <item>
                 <shape>
-                    <corners android:radius="8dp" />
+                    <corners android:radius="4dp" />
                     <solid android:color="@color/colorPrimary" />
                 </shape>
             </item>
@@ -12,7 +12,7 @@
     </item>
     <item android:state_enabled="false">
         <shape>
-            <corners android:radius="8dp" />
+            <corners android:radius="4dp" />
             <solid android:color="@color/gray" />
         </shape>
     </item>

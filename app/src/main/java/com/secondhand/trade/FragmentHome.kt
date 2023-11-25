@@ -25,6 +25,8 @@ class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
     private val fabHome by lazy { binding.fabHome }
 
+    private val txtNoProduct by lazy { binding.txtNoProduct }
+
     private lateinit var homeAdapter: AdapterHome
     private lateinit var mainActivity: ActivityMain
     private lateinit var searchMenuItem: MenuItem
@@ -111,12 +113,8 @@ class FragmentHome : Fragment() {
 
         initViewModel()
         initRecyclerview()
-        return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
         initItemList()
+        return binding.root
     }
 
     // ViewModel 값 변화 감지
@@ -213,6 +211,7 @@ class FragmentHome : Fragment() {
             homeAdapter.itemList.addAll(itemList)
             homeAdapter.notifyDataSetChanged()
             if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
+            if (itemList.isEmpty()) txtNoProduct.visibility = View.VISIBLE else txtNoProduct.visibility - View.GONE
             binding.swipeHome.isRefreshing = false
         }.addOnFailureListener {
 

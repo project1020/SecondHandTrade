@@ -18,7 +18,7 @@ class ActivityPostImage : AppCompatActivity() {
             supportStartPostponedEnterTransition()
         }
 
-        binding.btnCLose.setOnClickListener {
+        binding.btnClose.setOnClickListener {
             finish()
         }
     }

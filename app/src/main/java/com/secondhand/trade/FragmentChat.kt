@@ -39,6 +39,7 @@ class FragmentChat : Fragment() {
 
     private val swipeChat by lazy { binding.swipeChat }
     private val recyclerChat by lazy { binding.recyclerChat }
+    private val txtNoMessage by lazy { binding.txtNoMessage }
 
     private val currentUserUID by lazy { Firebase.auth.currentUser?.uid }
 
@@ -158,6 +159,7 @@ class FragmentChat : Fragment() {
                     chatAdapter.notifyDataSetChanged()
                     recyclerChat.scrollToPosition(0)
                     if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
+                    if (itemList.isEmpty()) txtNoMessage.visibility = View.VISIBLE else txtNoMessage.visibility - View.GONE
                     swipeChat.isRefreshing = false
                 }
             }

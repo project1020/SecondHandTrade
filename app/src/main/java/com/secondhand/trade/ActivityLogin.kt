@@ -26,7 +26,7 @@ class ActivityLogin : AppCompatActivity() {
         override fun handleOnBackPressed() {
             if (System.currentTimeMillis() - backPressedTime >= 2000) {
                 backPressedTime = System.currentTimeMillis()
-                Snackbar.make(binding.layoutLogin, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", 2000).show()
+                Snackbar.make(binding.layoutParent, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", 2000).show()
             } else {
                 finish()
             }

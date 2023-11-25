@@ -68,9 +68,11 @@
     <!-- activity_chat -->
     <string name="str_chat_edit_message">내용 입력</string>
     <string name="str_chat_btn_send">쪽지 보내기</string>
+    <string name="str_chat_txt_nomessage">받은 쪽지가 없습니다.</string>
     <!-- fragment_home -->
     <string name="str_home_toolbar_title">중고거래</string>
     <string name="str_home_fab_post">물품 등록</string>
+    <string name="str_home_txt_noproduct">판매 중인 물품이 없습니다.</string>
     <!-- fragment_myinfo -->
     <string name="str_myinfo_txt_email">이메일</string>
     <string name="str_myinfo_txt_birth">생년월일</string>
