@@ -21,9 +21,9 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/toolbarEdit"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/toolbarEdit" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
@@ -71,7 +71,7 @@
                         android:layout_height="32dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="16dp"
-                        android:src="@drawable/icon_edit_with_background"
+                        android:src="@drawable/icon_edit_filled"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -86,7 +86,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:gravity="start|center_vertical"
                 android:text="@string/str_postedit_txt_title"
                 android:textColor="@color/dark_gray"
                 android:textSize="20dp"
@@ -112,7 +111,7 @@
                     android:id="@+id/editTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/drawable_chat_edit"
+                    android:background="@drawable/drawable_edittext_outlined"
                     android:hint="@string/str_postedit_edit_title"
                     android:textColor="@color/dark_gray" />
 
@@ -125,7 +124,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:gravity="start|center_vertical"
                 android:text="@string/str_postedit_txt_content"
                 android:textColor="@color/dark_gray"
                 android:textSize="20dp"
@@ -151,8 +149,8 @@
                     android:id="@+id/editContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/drawable_chat_edit"
-                    android:gravity="top|start"
+                    android:background="@drawable/drawable_edittext_outlined"
+                    android:gravity="top"
                     android:hint="@string/str_postedit_edit_content"
                     android:minLines="3"
                     android:textColor="@color/dark_gray" />
@@ -166,7 +164,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:gravity="start|center_vertical"
                 android:text="@string/str_postedit_txt_price"
                 android:textColor="@color/dark_gray"
                 android:textSize="20dp"
@@ -192,8 +189,7 @@
                     android:id="@+id/editPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/drawable_chat_edit"
-                    android:gravity="top|start"
+                    android:background="@drawable/drawable_edittext_outlined"
                     android:hint="@string/str_postedit_edit_price"
                     android:inputType="number"
                     android:maxLines="1"
@@ -208,7 +204,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:gravity="start|center_vertical"
                 android:text="@string/str_postedit_txt_issoldout"
                 android:textColor="@color/dark_gray"
                 android:textSize="20dp"
@@ -224,7 +219,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -238,9 +232,9 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="@drawable/drawable_postedit_btn"
+                    android:backgroundTint="@drawable/drawable_togglebutton_background"
                     android:text="@string/str_postedit_btn_forsale"
-                    android:textColor="@drawable/drawable_postedit_btn_text"
+                    android:textColor="@drawable/drawable_togglebutton_text_white"
                     app:cornerRadius="4dp"
                     app:strokeColor="@color/gray" />
 
@@ -250,9 +244,9 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:backgroundTint="@drawable/drawable_postedit_btn"
+                    android:backgroundTint="@drawable/drawable_togglebutton_background"
                     android:text="@string/str_postedit_btn_soldout"
-                    android:textColor="@drawable/drawable_postedit_btn_text"
+                    android:textColor="@drawable/drawable_togglebutton_text_white"
                     app:cornerRadius="4dp"
                     app:strokeColor="@color/gray" />
 

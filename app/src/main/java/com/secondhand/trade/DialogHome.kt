@@ -56,7 +56,7 @@ class DialogHome(private val onApply: () -> Unit, private val onCancel: () -> Un
         // 다이얼로그 기본값 설정
         dialog?.apply {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // 배경 투명하게 해서 둥근 모서리 적용
-            window?.attributes?.width = (context.resources.displayMetrics.widthPixels.times(0.9)).toInt() // 가로 길이를 화면의 90%로 설정
+            window?.attributes?.width = (context.resources.displayMetrics.widthPixels.times(0.85)).toInt() // 가로 길이를 화면의 90%로 설정
             setCanceledOnTouchOutside(false) // 다이얼로그 뒤쪽 클릭해도 다이얼로그가 닫히지 않게 설정
         }
     }
