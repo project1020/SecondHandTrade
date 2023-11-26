@@ -2,15 +2,21 @@
 
 고급 모바일 프로그래밍 기말 프로젝트
 
+</br>
+
 ## 진행 날짜
 
 2023.10.22 ~ 2023.11.26
+
+</br>
 
 ## 팀
 
 - 1871377 오병택
 - 1971008 김승상
 - 1971015 반명우
+
+</br>
 
 ## 기능
 
@@ -24,23 +30,32 @@
 - [x] 메시지 보내기 : 판매자에게 메시지 보내기
 - [x] 메시지 보기 : 구매자가 보낸 메지지 보기
 
+</br>
+
 ## 앱 구동 화면
 
 ### 로그인 및 회원가입
-![KakaoTalk_20231126_225624988_09](https://github.com/project1020/SecondHandTrade/assets/148557775/db7b8a27-f2b4-4859-abd8-58091c85df41) | ![KakaoTalk_20231126_225624988_08](https://github.com/project1020/SecondHandTrade/assets/148557775/39df7008-60b6-4d15-bd24-76bc859a62f9)
+<p float="left">
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/db7b8a27-f2b4-4859-abd8-58091c85df41" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/39df7008-60b6-4d15-bd24-76bc859a62f9" width="33%" />
+</p></br>
 
 ### 메인화면
-![KakaoTalk_20231126_225624988_07](https://github.com/project1020/SecondHandTrade/assets/148557775/39bd58be-8e39-4615-9202-84ce1b3582c9) | ![KakaoTalk_20231126_225624988_06](https://github.com/project1020/SecondHandTrade/assets/148557775/675a68af-dca9-4c07-954e-7b66fe296793) | ![KakaoTalk_20231126_225624988_05](https://github.com/project1020/SecondHandTrade/assets/148557775/39edaace-a490-490f-9b3c-f2b2a5594f03)
+<p float="left">
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/39bd58be-8e39-4615-9202-84ce1b3582c9" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/675a68af-dca9-4c07-954e-7b66fe296793" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/39edaace-a490-490f-9b3c-f2b2a5594f03" width="33%" />
+</p></br>
 
 ### 물품 등록 및 수정
-![KakaoTalk_20231126_225624988_03](https://github.com/project1020/SecondHandTrade/assets/148557775/cc8d2a9b-2d10-4223-8bb4-e08ab04b33ca) | ![KakaoTalk_20231126_225624988_04](https://github.com/project1020/SecondHandTrade/assets/148557775/118521a2-fb80-4d27-9471-7fc010269ba3)
+<p float="left">
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/cc8d2a9b-2d10-4223-8bb4-e08ab04b33ca" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/118521a2-fb80-4d27-9471-7fc010269ba3" width="33%" />
+</p></br>
 
 ### 게시글
-![KakaoTalk_20231126_225624988](https://github.com/project1020/SecondHandTrade/assets/148557775/593f31fa-f30b-4e1f-94ec-6be4970f4c7b) | ![KakaoTalk_20231126_225624988_01](https://github.com/project1020/SecondHandTrade/assets/148557775/ed1e2779-1731-47c4-9e1c-5c15bd11da46) | ![KakaoTalk_20231126_225624988_02](https://github.com/project1020/SecondHandTrade/assets/148557775/3794c4d0-0782-4fb9-bd10-9c61adf8b417)
-
-
-
-
-
-
-
+<p float="left">
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/593f31fa-f30b-4e1f-94ec-6be4970f4c7b" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/ed1e2779-1731-47c4-9e1c-5c15bd11da46" width="33%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/3794c4d0-0782-4fb9-bd10-9c61adf8b417" width="33%" />
+</p></br>
