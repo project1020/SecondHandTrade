@@ -27,6 +27,7 @@ class ActivityRegister : AppCompatActivity() {
     private val firebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseAuth by lazy { Firebase.auth }
 
+    private val imgProfile by lazy { binding.imgProfile }
     private val editNickname by lazy { binding.editNickname }
     private val editBirth by lazy { binding.editBirth }
     private val editEmail by lazy { binding.editEmail }
@@ -46,8 +47,8 @@ class ActivityRegister : AppCompatActivity() {
         setContentView(binding.root)
 
         setProfileImage()
+        initWidget()
         editTextOnTextChangedAndFocus()
-        onWidgetClickListener()
     }
 
     // EditText 유효성 검사 함수
@@ -79,7 +80,7 @@ class ActivityRegister : AppCompatActivity() {
     }
 
     // 위젯 클릭 리스너 함수
-    private fun onWidgetClickListener() {
+    private fun initWidget() {
         // 생년월일 EditText 클릭 이벤트
         editBirth.setOnClickListener {
             inputBirth.error = null
@@ -137,18 +138,18 @@ class ActivityRegister : AppCompatActivity() {
             // 이미지 목록 중 랜덤으로 하나 선택해서 프로필 이미지로 설정
             if (imageList.isNotEmpty()) {
                 profileImageUrl = imageList.random().toString()
-                Glide.with(this).load(profileImageUrl).into(binding.imgProfile)
+                Glide.with(this).load(profileImageUrl).into(imgProfile)
             }
         }
 
         // 프로필 이미지 클릭
-        binding.imgProfile.setOnClickListener {
+        imgProfile.setOnClickListener {
             bottomSheetDialog.show()
         }
         
         // 프로필 이미지 선택
         adapterRegister.setOnItemClickListener { item, _ ->
-            Glide.with(this@ActivityRegister).load(item.image).into(binding.imgProfile)
+            Glide.with(this@ActivityRegister).load(item.image).into(imgProfile)
             profileImageUrl = item.image
             bottomSheetDialog.dismiss()
         }
@@ -160,9 +161,9 @@ class ActivityRegister : AppCompatActivity() {
 
         firebaseStorage.reference.child("image_profile").listAll()
             .addOnSuccessListener { images ->
-                for (file in images.items) {
-                    file.downloadUrl.addOnSuccessListener { uri ->
-                        imageList.add(uri)
+                for (image in images.items) {
+                    image.downloadUrl.addOnSuccessListener { imageUri ->
+                        imageList.add(imageUri)
 
                         if (imageList.size == images.items.size)
                             callback(imageList)
@@ -228,8 +229,7 @@ class ActivityRegister : AppCompatActivity() {
         val userMap = mapOf(
             "nickname" to nickname,
             "birth" to birth,
-            "profileImage" to profileImage,
-            "isLoggedIn" to true
+            "profileImage" to profileImage
         )
 
         firebaseDB.collection("users").document(userId).set(userMap)

@@ -13,46 +13,58 @@ import java.util.Date
 class ActivityChatSend : AppCompatActivity(){
     private val binding by lazy { ActivityChatSendBinding.inflate(layoutInflater) }
 
-    private val sellerUID by lazy { intent.getStringExtra("sellerUID") }
+    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
+    private val currentUserID by lazy { Firebase.auth.currentUser?.uid }
+
+    private val imgProfile by lazy { binding.imgProfile }
+    private val txtTitle by lazy { binding.txtTitle }
+    private val editMessage by lazy { binding.editMessage }
+    private val txtNickname by lazy { binding.txtNickname }
+    private val btnSend by lazy { binding.btnSend }
+
     private val sellerProfileImage by lazy { intent.getStringExtra("sellerProfileImage") }
-    private val sellerNickName by lazy { intent.getStringExtra("sellerNickName") }
     private val postTitle by lazy { intent.getStringExtra("postTitle") }
+    private val sellerNickName by lazy { intent.getStringExtra("sellerNickName") }
+    private val sellerUID by lazy { intent.getStringExtra("sellerUID") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.btnSend.setOnClickListener{
-            sendMessage()
-        }
-
-        initView()
+        initWidget()
     }
 
-    private fun initView() {
-        sellerProfileImage?.let {Glide.with(this@ActivityChatSend).load(it).into(binding.imgProfile) }
-        sellerNickName?.let { binding.txtNickname.text = it }
-        postTitle?.let { binding.txtTitle.text = it }
+    private fun initWidget() {
+        Glide.with(this@ActivityChatSend).load(sellerProfileImage).into(imgProfile)
+        txtTitle.text = postTitle
+        txtNickname.text = sellerNickName
+
+        btnSend.setOnClickListener{ sendMessage() }
     }
 
     // 쪽지 보내기 함수
     private fun sendMessage() {
-        val message = binding.editMessage.text.toString()
+        val message = editMessage.text.toString()
 
         if (message.trim().isEmpty()) {
-            Toast.makeText(this, "내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.str_chatsend_input_message), Toast.LENGTH_SHORT).show()
         } else {
             val itemMap = hashMapOf(
-                "sender" to Firebase.auth.currentUser?.uid,
-                "message" to binding.editMessage.text.toString(),
-                "date" to Date()
+                "title" to postTitle,
+                "message" to message,
+                "date" to Date(),
+                "sender" to currentUserID
             )
 
             sellerUID?.let {
-                FirebaseFirestore.getInstance().collection("chats").document(it).collection("receivedmessage").add(itemMap).addOnSuccessListener {
-                    Toast.makeText(this, "판매자에게 쪽지를 보냈습니다!", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
+                firebaseDB.collection("chats").document(it).collection("receivedmessage").add(itemMap)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, getString(R.string.str_chatsend_send_success), Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, getString(R.string.str_chatsend_send_failed), Toast.LENGTH_SHORT).show()
+                    }
             }
         }
     }

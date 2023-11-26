@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.secondhand.trade.FunComp.Companion.logout
 import com.secondhand.trade.databinding.ActivityMainBinding
 
 class HomeFilterViewModel : ViewModel() {
@@ -24,13 +25,18 @@ class HomeFilterViewModel : ViewModel() {
 
 class ActivityMain : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    // 뒤로가기 버튼 두 번 클릭 콜백
+
+    private val layoutParent by lazy { binding.layoutParent }
+    private val layoutChild by lazy { binding.layoutChild }
+    private val bottombarMain by lazy { binding.bottombarMain }
+
     private var backPressedTime: Long = 0
+    // 뒤로가기 버튼 두 번 클릭 콜백
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (System.currentTimeMillis() - backPressedTime >= 2000) {
                 backPressedTime = System.currentTimeMillis()
-                Snackbar.make(binding.layoutMain, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", 2000).show()
+                Snackbar.make(layoutParent, getString(R.string.str_main_press_back), 2000).show()
             } else {
                 finish()
             }
@@ -41,17 +47,17 @@ class ActivityMain : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
+        onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 콜백 등록
 
         changeFragment(FragmentHome())
-        binding.bottombarMain.onItemSelected = ::onNavigationItemSelected
+        bottombarMain.onItemSelected = ::onNavigationItemSelected
     }
 
     override fun onDestroy() {
         super.onDestroy()
         // 자동 로그인 상태가 아닐 시 종료하면 로그아웃
         if (!Preferences.isAutoLogin) {
-            FunComp.logout(this)
+            logout(this)
         }
     }
 
@@ -68,6 +74,6 @@ class ActivityMain : AppCompatActivity() {
 
     // fragment 전환 함수
     private fun changeFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(binding.frameMain.id, fragment).commit()
+        supportFragmentManager.beginTransaction().replace(layoutChild.id, fragment).commit()
     }
 }

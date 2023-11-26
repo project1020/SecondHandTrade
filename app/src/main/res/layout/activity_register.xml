@@ -6,11 +6,11 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgProfile"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/drawable_myinfo_img"
-        android:foreground="@drawable/drawable_register_img_add"
+        android:background="@drawable/drawable_image_circular_outlined"
+        android:foreground="@drawable/drawable_icon_add_filled"
         android:padding="10dp"
         app:layout_constraintBottom_toTopOf="@+id/layoutRegister"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,7 +41,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editNickname"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_nickname"
@@ -55,7 +55,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:endIconMode="clear_text"
             app:errorEnabled="true"
             app:hintEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +63,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editBirth"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:cursorVisible="false"
@@ -89,7 +88,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_email"
@@ -112,7 +111,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPassword"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_password"
@@ -135,7 +134,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPasswordConfirm"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_password"
@@ -146,7 +145,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnRegister"
-            style="@style/StyleButton.Rounded"
+            style="@style/StyleButtonRounded"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="8dp"

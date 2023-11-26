@@ -1,11 +1,14 @@
 package com.secondhand.trade
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,21 +22,27 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import com.secondhand.trade.FunComp.Companion.getTimeAgo
 import com.secondhand.trade.databinding.FragmentChatBinding
+import android.util.Pair
 
 data class DataMessage(
-    val senderUID: String?,
+    val title: String?,
     val message: String?,
-    val date: Timestamp?
+    val date: Timestamp?,
+    val senderUID: String?
 )
 
 class FragmentChat : Fragment() {
     private val binding by lazy { FragmentChatBinding.inflate(layoutInflater) }
     private lateinit var mainActivity: ActivityMain
 
-    private val db by lazy { FirebaseFirestore.getInstance() }
+    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
+    private val currentUserID by lazy { Firebase.auth.currentUser?.uid }
+
+    private val swipeChat by lazy { binding.swipeChat }
+    private val recyclerChat by lazy { binding.recyclerChat }
+    private val txtNoMessage by lazy { binding.txtNoMessage }
 
     private lateinit var chatAdapter: AdapterChat
-    private val currentUserID by lazy { Firebase.auth.currentUser?.uid }
 
     private var lastItem: DocumentSnapshot? = null
     private var isLoading = false
@@ -45,23 +54,16 @@ class FragmentChat : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding.swipeChat.apply {
-            setColorSchemeResources(R.color.colorPrimary)
-            setOnRefreshListener {
-                chatAdapter.itemList.clear()
-                initItemList()
-            }
-        }
-
         initRecyclerView()
         initItemList()
+
         return binding.root
     }
 
     private fun initRecyclerView() {
-        chatAdapter = AdapterChat(mainActivity, binding.recyclerChat)
+        chatAdapter = AdapterChat(mainActivity, recyclerChat)
 
-        binding.recyclerChat.apply {
+        recyclerChat.apply {
             adapter = chatAdapter
             setHasFixedSize(true)
             itemAnimator = null
@@ -82,34 +84,57 @@ class FragmentChat : Fragment() {
             })
         }
 
-        chatAdapter.setOnItemClickListener { item, _ ->
+        swipeChat.apply {
+            setColorSchemeResources(R.color.colorPrimary)
+            setOnRefreshListener {
+                chatAdapter.itemList.clear()
+                initItemList()
+            }
+        }
+
+        chatAdapter.setOnItemClickListener { item, position ->
+            val itemView = recyclerChat.findViewHolderForAdapterPosition(position)?.itemView
+
+            val imgProfile = itemView?.findViewById<ImageView>(R.id.imgProfile)
+            val txtMessage = itemView?.findViewById<TextView>(R.id.txtMessage)
+            val txtDate = itemView?.findViewById<TextView>(R.id.txtDate)
+            val txtNickname = itemView?.findViewById<TextView>(R.id.txtNickname)
+
+            val transitionImageProfile = Pair.create<View, String>(imgProfile, "transitionImgProfile")
+            val transitionTxtMessage = Pair.create<View, String>(txtMessage, "transitionTxtMessage")
+            val transitionTxtDate = Pair.create<View, String>(txtDate, "transitionTxtDate")
+            val transitionTxtNickname = Pair.create<View, String>(txtNickname, "transitionTxtNickname")
+
+            val options  = ActivityOptions.makeSceneTransitionAnimation(mainActivity, transitionImageProfile, transitionTxtMessage, transitionTxtDate, transitionTxtNickname).toBundle()
             startActivity(Intent(mainActivity, ActivityChatReceive::class.java).apply {
                 putExtra("profileImage", item.profileImage)
-                putExtra("nickname", item.nickname)
-                putExtra("date", getTimeAgo(item.date?.toDate()))
-                putExtra("message", item.message)
-            })
+                putExtra("chatTitle", item.title)
+                putExtra("chatMessage", item.message)
+                putExtra("chatDate", getTimeAgo(item.date?.toDate()))
+                putExtra("senderNickname", item.nickname)
+            }, options)
         }
     }
 
     private fun initItemList() {
-        binding.swipeChat.isRefreshing = true
+        swipeChat.isRefreshing = true
         isLastPage = false
 
         currentUserID?.let { userID ->
-            db.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).limit(10).get().addOnSuccessListener { documents ->
+            firebaseDB.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).limit(10).get().addOnSuccessListener { documents ->
                 val itemList = mutableListOf<DataChat>()
                 val tasks = mutableListOf<Task<DocumentSnapshot>>()
                 val messageList = documents.map { document ->
-                    val senderUID = document.getString("sender")
+                    val title = document.getString("title")
                     val message = document.getString("message")
                     val date = document.getTimestamp("date")
-                    DataMessage(senderUID, message, date)
+                    val senderUID = document.getString("sender")
+                    DataMessage(title, message, date, senderUID)
                 }
 
                 messageList.forEach { message ->
                     message.senderUID?.let {
-                        val task = db.collection("users").document(it).get()
+                        val task = firebaseDB.collection("users").document(it).get()
                         tasks.add(task)
                     }
                 }
@@ -121,9 +146,10 @@ class FragmentChat : Fragment() {
                         val user = messageMap[message.senderUID]
                         val dataChat = DataChat(
                             profileImage = user?.getString("profileImage"),
-                            nickname = user?.getString("nickname"),
+                            title = message.title,
                             message = message.message,
                             date = message.date,
+                            nickname = user?.getString("nickname")
                         )
                         itemList.add(dataChat)
                     }
@@ -131,9 +157,10 @@ class FragmentChat : Fragment() {
                     chatAdapter.itemList.clear()
                     chatAdapter.itemList.addAll(itemList)
                     chatAdapter.notifyDataSetChanged()
-                    binding.recyclerChat.scrollToPosition(0)
+                    recyclerChat.scrollToPosition(0)
                     if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
-                    binding.swipeChat.isRefreshing = false
+                    if (itemList.isEmpty()) txtNoMessage.visibility = View.VISIBLE else txtNoMessage.visibility - View.GONE
+                    swipeChat.isRefreshing = false
                 }
             }
         }
@@ -146,18 +173,19 @@ class FragmentChat : Fragment() {
 
         lastItem?.let { documentSnapshot ->
             currentUserID?.let { userID ->
-                db.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).startAfter(documentSnapshot).limit(10).get().addOnSuccessListener { documents ->
+                firebaseDB.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).startAfter(documentSnapshot).limit(10).get().addOnSuccessListener { documents ->
                     val itemList = mutableListOf<DataChat>()
                     val startPosition = chatAdapter.itemList.size
                     val messageList = documents.map { document ->
-                        val senderUID = document.getString("sender")
+                        val title = document.getString("title")
                         val message = document.getString("message")
                         val date = document.getTimestamp("date")
-                        DataMessage(senderUID, message, date)
+                        val senderUID = document.getString("sender")
+                        DataMessage(title, message, date, senderUID)
                     }
 
                     val userTasks = messageList.mapNotNull { message ->
-                        message.senderUID?.let { db.collection("users").document(it).get() }
+                        message.senderUID?.let { firebaseDB.collection("users").document(it).get() }
                     }
 
                     Tasks.whenAllSuccess<DocumentSnapshot>(userTasks).addOnSuccessListener { document ->
@@ -167,9 +195,10 @@ class FragmentChat : Fragment() {
                             val user = messageMap[message.senderUID]
                             val dataChat = DataChat(
                                 profileImage = user?.getString("profileImage"),
-                                nickname = user?.getString("nickname"),
+                                title = message.title,
                                 message = message.message,
                                 date = message.date,
+                                nickname = user?.getString("nickname")
                             )
                             itemList.add(dataChat)
                         }

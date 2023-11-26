@@ -3,20 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    android:background="@drawable/drawable_chat_recycler"
+    android:background="@drawable/drawable_recyclerview_ripple"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:padding="16dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgProfile"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginStart="16dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/drawable_post_img"
+        android:background="@drawable/drawable_image_circular_outlined"
         android:padding="10dp"
+        android:transitionName="transitionImgProfile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,13 +24,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:fontFamily="@font/nanum_square_round_extra_bold"
         android:gravity="start|center_vertical"
         android:maxLines="1"
         android:textColor="@color/dark_gray"
         android:textSize="18dp"
+        android:transitionName="transitionTxtNickname"
         app:layout_constraintBottom_toTopOf="@+id/txtMessage"
         app:layout_constraintEnd_toStartOf="@+id/txtDate"
         app:layout_constraintStart_toEndOf="@+id/imgProfile"
@@ -41,7 +40,6 @@
         android:id="@+id/txtMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
@@ -57,14 +55,14 @@
         android:id="@+id/txtDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:fontFamily="@font/nanum_square_round_regular"
         android:maxLines="1"
         android:textColor="@color/gray"
         android:textSize="14dp"
-        app:layout_constraintVertical_bias="0.3"
+        android:transitionName="transitionTxtDate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

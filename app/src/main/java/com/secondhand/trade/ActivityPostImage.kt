@@ -18,8 +18,8 @@ class ActivityPostImage : AppCompatActivity() {
             supportStartPostponedEnterTransition()
         }
 
-        binding.btnCLose.setOnClickListener {
-            finish()
+        binding.btnClose.setOnClickListener {
+            onBackPressed()
         }
     }
 }

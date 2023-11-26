@@ -7,26 +7,33 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
+import com.secondhand.trade.FunComp.Companion.clearErrorOnTextChangedAndFocus
 import com.secondhand.trade.databinding.ActivityLoginBinding
 
 class ActivityLogin : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+
+    private val firebaseAuth by lazy { Firebase.auth }
+
+    private val editEmail by lazy { binding.editEmail }
+    private val editPassword by lazy { binding.editPassword }
     private val inputEmail by lazy { binding.inputEmail }
     private val inputPassword by lazy { binding.inputPassword }
-    private val db = FirebaseFirestore.getInstance() // 파이어베이스 Firestore 데이터베이스
-    // 뒤로가기 버튼 두 번 클릭 콜백
+    private val txtRegister by lazy { binding.txtRegister }
+    private val btnLogin by lazy { binding.btnLogin }
+    private val switchAutoLogin by lazy { binding.switchAutoLogin }
+
+
     private var backPressedTime: Long = 0
+    // 뒤로가기 버튼 두 번 클릭 콜백
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (System.currentTimeMillis() - backPressedTime >= 2000) {
                 backPressedTime = System.currentTimeMillis()
-                Snackbar.make(binding.layoutLogin, "뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.", 2000).show()
+                Snackbar.make(binding.layoutParent, getString(R.string.str_login_press_back), 2000).show()
             } else {
                 finish()
             }
@@ -43,28 +50,11 @@ class ActivityLogin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 콜백 등록
+
         autoLogin()
-
-        this.onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 두 번 클릭 콜백 등록
-
-        setTextWatchers()
-
-        // 로그인 버튼 클릭 이벤트
-        binding.btnLogin.setOnClickListener {
-            val email = binding.editEmail.text.toString()
-            val password = binding.editPassword.text.toString()
-
-            // edittext 공백 체크
-            if (email.trim().isEmpty()) inputEmail.error = "이메일을 입력해 주세요." else inputEmail.error = null
-            if (password.trim().isEmpty()) inputPassword.error = "비밀번호를 입력해 주세요." else inputPassword.error = null
-            if (email.trim().isNotEmpty() && password.trim().isNotEmpty()) doLogin(email, password)
-        }
-
-        // 회원가입 텍스트 클릭
-        binding.txtRegister.setOnClickListener {
-            //startActivity(Intent(this, ActivityRegister::class.java))
-            startForRegisterResult.launch(Intent(this, ActivityRegister::class.java))
-        }
+        initWidget()
+        editTextOnTextChangedAndFocus()
     }
 
     // 자동 로그인 함수
@@ -76,48 +66,60 @@ class ActivityLogin : AppCompatActivity() {
         }
     }
 
-    // inputLayout 입력 변화 감지 함수
-    private fun setTextWatchers() {
-        // edittext 입력시 inputLayout error 삭제
-        binding.editEmail.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputEmail.error = null })
-        binding.editPassword.addTextChangedListener(onTextChanged = { _, _, _, _, -> inputPassword.error = null })
+    // EditText 유효성 검사 함수
+    private fun isValidInput(email: String, password: String): Boolean {
+        inputEmail.error = if (email.trim().isEmpty()) getString(R.string.str_register_input_email) else null
+        inputPassword.error = if (password.trim().isEmpty()) getString(R.string.str_register_input_password) else null
+
+        return inputEmail.error == null && inputPassword.error == null
     }
 
-    private fun doLogin(email: String, password: String) {
-        Firebase.auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                val firebaseUser = task.result?.user
-                val uid = firebaseUser?.uid
+    // EditText 포커스 및 입력 감지 함수
+    private fun editTextOnTextChangedAndFocus() {
+        editEmail.clearErrorOnTextChangedAndFocus(inputEmail)
+        editPassword.clearErrorOnTextChangedAndFocus(inputPassword)
+    }
 
-                if (uid != null) {
-                    val userRef = db.collection("users").document(uid)
-                    userRef.get().addOnSuccessListener { document ->
-                        if (document.exists() && document.getBoolean("isLoggedIn") == true) {
-                            Toast.makeText(this, "이미 로그인 중인 기기가 있습니다.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Preferences.isAutoLogin = binding.switchLogin.isChecked
-                            userRef.set(mapOf("isLoggedIn" to true), SetOptions.merge())
-                            startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
-                        }
-                    }
-                }
-            } else {
+    private fun initWidget() {
+        // 로그인 버튼 클릭 이벤트
+        btnLogin.setOnClickListener {
+            val email = editEmail.text.toString()
+            val password = editPassword.text.toString()
+
+            if (isValidInput(email, password)) {
+                doLogin(email, password)
+            }
+        }
+
+        // 회원가입 텍스트 클릭
+        txtRegister.setOnClickListener {
+            startForRegisterResult.launch(Intent(this, ActivityRegister::class.java))
+        }
+    }
+
+    // 로그인 시도 함수
+    private fun doLogin(email: String, password: String) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                Preferences.isAutoLogin = switchAutoLogin.isChecked
+                startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
+            }
+            .addOnFailureListener {
                 when {
                     // 이메일 혹은 비밀번호가 틀렸을 때
-                    task.exception?.message?.contains("INVALID_LOGIN_CREDENTIALS") == true -> {
-                        inputEmail.error = "이메일을 확인해 주세요."
-                        inputPassword.error = "비밀번호를 확인해 주세요."
+                    it.message?.contains("INVALID_LOGIN_CREDENTIALS") == true -> {
+                        inputEmail.error = getString(R.string.str_login_check_email)
+                        inputPassword.error = getString(R.string.str_login_check_password)
                     }
                     // 이메일 형식이 올바르지 않을 때
-                    task.exception?.message?.contains("The email address is badly formatted") == true -> {
-                        inputEmail.error = "이메일 형식이 올바르지 않습니다."
+                    it.message?.contains("The email address is badly formatted") == true -> {
+                        inputEmail.error = getString(R.string.str_login_invalid_email)
                     }
                     // 그 외
                     else -> {
-                        Toast.makeText(this, "로그인에 실패하였습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.str_login_login_failed), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
-        }
     }
 }

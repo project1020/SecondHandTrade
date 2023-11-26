@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layoutLogin"
+    android:id="@+id/layoutParent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@drawable/icon_cart"
-        app:layout_constraintBottom_toTopOf="@+id/layoutLogin2"
+        app:layout_constraintBottom_toTopOf="@+id/layoutChild"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutLogin2"
+        android:id="@+id/layoutChild"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
@@ -40,7 +40,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editEmail"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_email"
@@ -63,7 +63,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editPassword"
-                style="@style/StyleTextInputEditText"
+                style="@style/StyleEditTextRounded"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:drawableStart="@drawable/icon_password"
@@ -73,7 +73,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchLogin"
+            android:id="@+id/switchAutoLogin"
             style="@style/StyleSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,14 +84,14 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLogin"
-            style="@style/StyleButton.Rounded"
+            style="@style/StyleButtonRounded"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="18dp"
             android:text="@string/str_login_btn_login"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switchLogin" />
+            app:layout_constraintTop_toBottomOf="@+id/switchAutoLogin" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -17,9 +17,10 @@ import com.secondhand.trade.databinding.RowChatBinding
 
 data class DataChat(
     val profileImage : String?,
-    val nickname : String?,
+    val title : String?,
     val message : String?,
-    val date : Timestamp?
+    val date : Timestamp?,
+    val nickname : String?
 )
 
 class AdapterChat(private val context: Context, private val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
