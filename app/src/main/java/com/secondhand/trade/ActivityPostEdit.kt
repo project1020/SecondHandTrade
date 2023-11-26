@@ -1,5 +1,6 @@
 package com.secondhand.trade
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -161,7 +162,7 @@ class ActivityPostEdit : AppCompatActivity() {
         if(!isUpdating) {
             CustomDialog(getString(R.string.str_postedit_cancel_edit),
                 onConfirm = {
-                    finish()
+                    setResult(Activity.RESULT_OK, Intent()).also { finish() }
                 },
                 onCancel = {}
             ).show(supportFragmentManager, "CustomDialog")
@@ -186,7 +187,7 @@ class ActivityPostEdit : AppCompatActivity() {
                     isUpdating = false
                     progressIndicator.visibility = View.GONE
                     Toast.makeText(this, getString(R.string.str_postedit_edit_success), Toast.LENGTH_SHORT).show()
-                    finish()
+                    setResult(Activity.RESULT_OK, Intent()).also { finish() }
                 }
                 .addOnFailureListener {
                     progressIndicator.visibility = View.GONE

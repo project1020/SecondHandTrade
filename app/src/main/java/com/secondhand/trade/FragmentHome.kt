@@ -1,5 +1,6 @@
 package com.secondhand.trade
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -46,6 +48,12 @@ class FragmentHome : Fragment() {
     private var isLastPage = false
     private var forSale = true
     private var soldOut = true
+
+    private val startForRegisterResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            initItemList()
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -107,7 +115,7 @@ class FragmentHome : Fragment() {
 
     private fun initWidget() {
         fabHome.setOnClickListener {
-            startActivity(Intent(mainActivity, ActivityPostRegister::class.java))
+            startForRegisterResult.launch(Intent(mainActivity, ActivityPostRegister::class.java))
         }
     }
 
@@ -163,7 +171,7 @@ class FragmentHome : Fragment() {
             }
 
             homeAdapter.setOnItemClickListener { item, _ ->
-                startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
+                startForRegisterResult.launch(Intent(mainActivity, ActivityPost::class.java).apply {
                     putExtra("postID", item.id)
                     putExtra("userID", item.userID)
                 })
@@ -214,7 +222,7 @@ class FragmentHome : Fragment() {
             homeAdapter.itemList.addAll(itemList)
             homeAdapter.notifyDataSetChanged()
             if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
-            if (itemList.isEmpty()) txtNoProduct.visibility = View.VISIBLE else txtNoProduct.visibility - View.GONE
+            if (itemList.isEmpty()) txtNoProduct.visibility = View.VISIBLE else txtNoProduct.visibility = View.GONE
             swipeHome.isRefreshing = false
         }.addOnFailureListener {
             Toast.makeText(mainActivity, getString(R.string.str_home_get_board_failed), Toast.LENGTH_SHORT).show()
