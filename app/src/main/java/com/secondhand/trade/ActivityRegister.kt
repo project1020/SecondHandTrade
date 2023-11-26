@@ -229,8 +229,7 @@ class ActivityRegister : AppCompatActivity() {
         val userMap = mapOf(
             "nickname" to nickname,
             "birth" to birth,
-            "profileImage" to profileImage,
-            "isLoggedIn" to true
+            "profileImage" to profileImage
         )
 
         firebaseDB.collection("users").document(userId).set(userMap)
