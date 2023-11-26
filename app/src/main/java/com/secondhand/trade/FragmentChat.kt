@@ -159,7 +159,7 @@ class FragmentChat : Fragment() {
                     chatAdapter.notifyDataSetChanged()
                     recyclerChat.scrollToPosition(0)
                     if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
-                    if (itemList.isEmpty()) txtNoMessage.visibility = View.VISIBLE else txtNoMessage.visibility - View.GONE
+                    if (itemList.isEmpty()) txtNoMessage.visibility = View.VISIBLE else txtNoMessage.visibility = View.GONE
                     swipeChat.isRefreshing = false
                 }
             }

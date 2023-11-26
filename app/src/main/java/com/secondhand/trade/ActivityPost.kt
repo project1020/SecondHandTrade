@@ -1,10 +1,13 @@
 package com.secondhand.trade
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
@@ -33,16 +36,26 @@ class ActivityPost : AppCompatActivity() {
     private var postPrice: Long? = null
     private var postIsSoldOut: Boolean? = false
 
+    private val startForRegisterResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            initPost()
+        }
+    }
+
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            setResult(Activity.RESULT_OK, Intent()).also { finish() }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        initWidget()
-    }
+        onBackPressedDispatcher.addCallback(this, callback) // 뒤로가기 버튼 콜백 등록
 
-    override fun onStart() {
-        super.onStart()
         initPost()
+        initWidget()
     }
 
     // 게시글 내용 표시 함수
@@ -100,7 +113,7 @@ class ActivityPost : AppCompatActivity() {
     private fun initWidget() {
         // 게시글 수정 버튼
         binding.btnEdit.setOnClickListener {
-            startActivity(Intent(this, ActivityPostEdit::class.java).apply {
+            startForRegisterResult.launch(Intent(this, ActivityPostEdit::class.java).apply {
                 putExtra("postImage", postImage)
                 putExtra("postTitle", postTitle)
                 putExtra("postContent", postContent)

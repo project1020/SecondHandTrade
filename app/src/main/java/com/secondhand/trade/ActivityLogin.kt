@@ -26,7 +26,6 @@ class ActivityLogin : AppCompatActivity() {
     private val btnLogin by lazy { binding.btnLogin }
     private val switchAutoLogin by lazy { binding.switchAutoLogin }
 
-
     private var backPressedTime: Long = 0
     // 뒤로가기 버튼 두 번 클릭 콜백
     private val callback = object : OnBackPressedCallback(true) {
