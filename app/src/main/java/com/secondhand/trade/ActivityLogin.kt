@@ -9,8 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
 import com.secondhand.trade.FunComp.Companion.clearErrorOnTextChangedAndFocus
 import com.secondhand.trade.databinding.ActivityLoginBinding
@@ -19,7 +17,6 @@ class ActivityLogin : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
     private val firebaseAuth by lazy { Firebase.auth }
-    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
 
     private val editEmail by lazy { binding.editEmail }
     private val editPassword by lazy { binding.editPassword }
@@ -104,20 +101,8 @@ class ActivityLogin : AppCompatActivity() {
     private fun doLogin(email: String, password: String) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener {
-                val userID = it.user?.uid
-
-                if (userID != null) {
-                    val userRef = firebaseDB.collection("users").document(userID)
-                    userRef.get().addOnSuccessListener { document ->
-                        if (document.exists() && document.getBoolean("isLoggedIn") == true) {
-                            Toast.makeText(this, getString(R.string.str_login_already_loggedin), Toast.LENGTH_SHORT).show()
-                        } else {
-                            Preferences.isAutoLogin = switchAutoLogin.isChecked
-                            userRef.set(mapOf("isLoggedIn" to true), SetOptions.merge())
-                            startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
-                        }
-                    }
-                }
+                Preferences.isAutoLogin = switchAutoLogin.isChecked
+                startActivity(Intent(this, ActivityMain::class.java)).also { finish() }
             }
             .addOnFailureListener {
                 when {
