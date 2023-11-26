@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.Timestamp
 import com.secondhand.trade.FunComp.Companion.formatNumber
 import com.secondhand.trade.FunComp.Companion.getTimeAgo
@@ -81,9 +80,9 @@ class AdapterHome(private val context: Context, private val recyclerView: Recycl
         }
 
         fun bind(item: DataHome) {
-            Glide.with(itemView).load(item.image).placeholder(whitePlaceHolderForGlide(context, 10, 10)).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).centerCrop().sizeMultiplier(0.5f).into(binding.imgProduct)
+            Glide.with(itemView).load(item.image).placeholder(whitePlaceHolderForGlide(context, 10, 10)).centerCrop().sizeMultiplier(0.5f).into(binding.imgProduct)
             binding.txtProduct.text = item.title
-            binding.txtPrice.text = "${item.price?.let { formatNumber(it) }}원"
+            binding.txtPrice.text = context.getString(R.string.str_adapterhome_price_won, item.price?.let { formatNumber(it) })
             binding.txtDate.text = getTimeAgo(item.date?.toDate())
             if (item.isSoldOut == true) {
                 binding.viewStatus.setBackgroundColor(ContextCompat.getColor(context, R.color.red))

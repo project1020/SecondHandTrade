@@ -42,7 +42,7 @@ class FunComp {
                         onLogoutSuccess?.invoke()
                     }
                     .addOnFailureListener { // isLoggedIn 상태 변경 실패
-                        Toast.makeText(activity, "로그아웃 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, activity.getString(R.string.str_funcomp_logout_failed), Toast.LENGTH_SHORT).show()
                         onLogoutFailed?.invoke()
                     }
             }
@@ -109,11 +109,13 @@ class FunComp {
             return ""
         }
 
+        // EditText의 입력 또는 포커싱을 감지해서 InputLayout의 error 메시지를 없애주는 함수
         fun EditText.clearErrorOnTextChangedAndFocus(textInputLayout: TextInputLayout) {
             addTextChangedListener(onTextChanged = { _, _, _, _, -> textInputLayout.error = null })
             setOnFocusChangeListener { _, hasFocus -> if (hasFocus) textInputLayout.error = null }
         }
 
+        // EditText의 가격 입력을 위한 함수
         fun formatEdittext(editText: EditText) {
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}

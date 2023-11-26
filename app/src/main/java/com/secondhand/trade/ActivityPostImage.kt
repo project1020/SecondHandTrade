@@ -19,7 +19,7 @@ class ActivityPostImage : AppCompatActivity() {
         }
 
         binding.btnClose.setOnClickListener {
-            finish()
+            onBackPressed()
         }
     }
 }
