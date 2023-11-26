@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -23,26 +24,28 @@ import com.secondhand.trade.databinding.FragmentHomeBinding
 
 class FragmentHome : Fragment() {
     private val binding by lazy { FragmentHomeBinding.inflate(layoutInflater) }
-    private val fabHome by lazy { binding.fabHome }
-
-    private val txtNoProduct by lazy { binding.txtNoProduct }
-
-    private lateinit var homeAdapter: AdapterHome
     private lateinit var mainActivity: ActivityMain
-    private lateinit var searchMenuItem: MenuItem
-    private lateinit var searchView: SearchView
 
     private val viewModel by activityViewModels<HomeFilterViewModel>()
 
-    private val db by lazy { FirebaseFirestore.getInstance() }
+    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
 
-    private var searchQuery: String? = null
+    private val toolbarHome by lazy { binding.toolbarHome }
+    private val fabHome by lazy { binding.fabHome }
+    private val swipeHome by lazy { binding.swipeHome }
+    private val recyclerHome by lazy { binding.recyclerHome }
+    private val txtNoProduct by lazy { binding.txtNoProduct }
+
+    private lateinit var homeAdapter: AdapterHome
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
+
     private var lastItem: DocumentSnapshot? = null
+    private var searchQuery: String? = null
     private var isLoading = false
     private var isLastPage = false
-
-    private var forSale: Boolean = true
-    private var soldOut: Boolean = true
+    private var forSale = true
+    private var soldOut = true
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -50,25 +53,30 @@ class FragmentHome : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // 액션바 추가
-        mainActivity.setSupportActionBar(binding.toolbarHome)
-        // 메뉴 추가 (검색, 필터)
+        initToolbar()
+        initMenu()
+        initWidget()
+        initViewModel()
+        initRecyclerview()
+        initItemList()
+
+        return binding.root
+    }
+    
+    private fun initToolbar() {
+        mainActivity.setSupportActionBar(toolbarHome)
+    }
+
+    private fun initMenu() {
         mainActivity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_home_toolbar_item, menu)
                 searchMenuItem = menu.findItem(R.id.menuSearch)
                 searchView = searchMenuItem.actionView as SearchView
 
-                searchView.queryHint = "물품 검색"
+                searchView.queryHint = getString(R.string.str_home_search_product)
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextSubmit(query: String): Boolean {
-                        // 검색 기능 구현
-                        /*
-                            검색 문제점 (firebase 자체 기능 한계)
-                            - 대소문자 무시 불가
-                            - 중간 문자 검색 불가
-                                ㄴ 예를 들어 갤럭시 S23 Ultra에서 S23과 Ultra는 검색 안됨
-                         */
                         searchQuery = query
                         initItemList()
                         return false
@@ -95,26 +103,12 @@ class FragmentHome : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
 
-        binding.fabHome.setOnClickListener {
+    private fun initWidget() {
+        fabHome.setOnClickListener {
             startActivity(Intent(mainActivity, ActivityPostRegister::class.java))
         }
-
-        // 당겨서 새로고침
-        binding.swipeHome.apply {
-            setColorSchemeResources(R.color.colorPrimary)
-            setOnRefreshListener {
-                searchQuery = null
-                homeAdapter.itemList.clear()
-                searchMenuItem.collapseActionView()
-                initItemList()
-            }
-        }
-
-        initViewModel()
-        initRecyclerview()
-        initItemList()
-        return binding.root
     }
 
     // ViewModel 값 변화 감지
@@ -130,9 +124,9 @@ class FragmentHome : Fragment() {
 
     // RecyclerView 설정
     private fun initRecyclerview() {
-        homeAdapter = AdapterHome(mainActivity, binding.recyclerHome)
+        homeAdapter = AdapterHome(mainActivity, recyclerHome)
 
-        binding.recyclerHome.apply {
+        recyclerHome.apply {
             adapter = homeAdapter
             addItemDecoration(ItemDecoratorDividerPadding(5)) // 아이템 간격 설정
             setHasFixedSize(true) // 아이템 크기가 고정되어 있음을 명시
@@ -141,7 +135,6 @@ class FragmentHome : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
-                    // FloatingActionButton 확장 및 축소
                     if (dy > 0 && fabHome.isExtended) { // 위로 스크롤
                         fabHome.shrink() // FAB 축소
                     } else if (dy < 0 && !fabHome.isExtended) { // 아래로 스크롤
@@ -159,6 +152,16 @@ class FragmentHome : Fragment() {
                 }
             })
 
+            swipeHome.apply {
+                setColorSchemeResources(R.color.colorPrimary)
+                setOnRefreshListener {
+                    searchQuery = null
+                    homeAdapter.itemList.clear()
+                    searchMenuItem.collapseActionView()
+                    initItemList()
+                }
+            }
+
             homeAdapter.setOnItemClickListener { item, _ ->
                 startActivity(Intent(mainActivity, ActivityPost::class.java).apply {
                     putExtra("postID", item.id)
@@ -170,10 +173,10 @@ class FragmentHome : Fragment() {
 
     // 아이템 가져오기
     private fun initItemList() {
-        binding.swipeHome.isRefreshing = true // 로딩 시 인디케이터 보이기
+        swipeHome.isRefreshing = true // 로딩 시 인디케이터 보이기
         isLastPage = false
 
-        val filteredQuery = db.collection("board_test").let {
+        val filteredQuery = firebaseDB.collection("board").let {
             var baseQuery: Query = it // 기본 쿼리 선언
 
             // 판매 여부 필터링
@@ -191,7 +194,7 @@ class FragmentHome : Fragment() {
                     .startAt(searchQuery)
                     .endAt(searchQuery + '\uf8ff')
             }
-        }.limit(5) // 5개씩 끊어서 렉 방지
+        }.limit(5) // 5개씩 끊어서 가져오기 (페이징)
 
         filteredQuery.get().addOnSuccessListener { documents ->
             val itemList = documents.map { document ->
@@ -212,9 +215,9 @@ class FragmentHome : Fragment() {
             homeAdapter.notifyDataSetChanged()
             if (documents.size() > 0) lastItem = documents.documents[documents.size() - 1]
             if (itemList.isEmpty()) txtNoProduct.visibility = View.VISIBLE else txtNoProduct.visibility - View.GONE
-            binding.swipeHome.isRefreshing = false
+            swipeHome.isRefreshing = false
         }.addOnFailureListener {
-
+            Toast.makeText(mainActivity, getString(R.string.str_home_get_board_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -225,8 +228,8 @@ class FragmentHome : Fragment() {
         homeAdapter.setLoading(true)
 
         lastItem?.let { documentSnapshot ->
-            val filteredQuery = db.collection("board_test").let { collectionReference ->
-                var baseQuery: Query = collectionReference
+            val filteredQuery = firebaseDB.collection("board").let {
+                var baseQuery: Query = it
 
                 when {
                     forSale && !soldOut -> baseQuery = baseQuery.whereEqualTo("isSoldOut", false)
@@ -266,7 +269,7 @@ class FragmentHome : Fragment() {
                 isLoading = false
                 homeAdapter.setLoading(false)
             }.addOnFailureListener {
-
+                Toast.makeText(mainActivity, getString(R.string.str_home_get_board_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }

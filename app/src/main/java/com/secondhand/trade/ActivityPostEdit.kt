@@ -17,6 +17,7 @@ import androidx.core.view.MenuProvider
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.secondhand.trade.FunComp.Companion.clearErrorOnTextChangedAndFocus
 import com.secondhand.trade.FunComp.Companion.formatEdittext
 import com.secondhand.trade.databinding.ActivityPostEditBinding
 import java.util.Date
@@ -32,7 +33,12 @@ class ActivityPostEdit : AppCompatActivity() {
     private val editTitle by lazy { binding.editTitle }
     private val editContent by lazy { binding.editContent }
     private val editPrice by lazy { binding.editPrice }
+    private val cardImage by lazy { binding.cardImage }
     private val btntoggleIsSoldOut by lazy { binding.btntoggleIsSoldOut }
+    private val inputTitle by lazy { binding.inputTitle }
+    private val inputContent by lazy { binding.inputContent }
+    private val inputPrice by lazy { binding.inputPrice }
+    private val toolbarEdit by lazy { binding.toolbarEdit }
     private val progressIndicator by lazy { binding.progressEdit }
 
     private val postImage by lazy { intent.getStringExtra("postImage") }
@@ -44,7 +50,7 @@ class ActivityPostEdit : AppCompatActivity() {
 
     private var imageURI: Uri? = null
     private var changedImageURI: String? = null
-    private val isSoldOut by lazy { when (binding.btntoggleIsSoldOut.checkedButtonId) {
+    private val isSoldOut by lazy { when (btntoggleIsSoldOut.checkedButtonId) {
         R.id.btnForSale -> false
         R.id.btnSoldOut -> true
         else -> false }
@@ -53,10 +59,11 @@ class ActivityPostEdit : AppCompatActivity() {
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
+    // 업로드 하는 중에는 뒤로가기 방지
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if(!isUpdating)
-                finish()
+                finishEdit()
         }
     }
 
@@ -66,12 +73,28 @@ class ActivityPostEdit : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, callback)
 
-        binding.toolbarEdit.apply {
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK && it.data != null) {
+                imageURI = it.data?.data
+                Glide.with(this).load(imageURI).into(imgProduct)
+            }
+        }
+
+        initToolbar()
+        initMenu()
+        initWidget()
+        editTextOnTextChangedAndFocus()
+    }
+
+    private fun initToolbar() {
+        toolbarEdit.apply {
             setSupportActionBar(this)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setDisplayShowHomeEnabled(true)
         }
+    }
 
+    private fun initMenu() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_postedit_toolbar_item, menu)
@@ -80,20 +103,21 @@ class ActivityPostEdit : AppCompatActivity() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
                     R.id.menuEdit -> {
-                        uploadImage()
+                        val title = editTitle.text.toString()
+                        val content = editContent.text.toString()
+                        val price = editPrice.text.toString().replace(",", "")
+
+                        if (isValidInput(title, content, price)) {
+                            uploadImage()
+                        }
                     }
                 }
                 return true
             }
         })
+    }
 
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK && it.data != null) {
-                imageURI = it.data?.data
-                Glide.with(this).load(imageURI).into(imgProduct)
-            }
-        }
-
+    private fun initWidget() {
         Glide.with(this).load(postImage).into(imgProduct)
         editTitle.setText(postTitle)
         editContent.setText(postContent)
@@ -103,7 +127,7 @@ class ActivityPostEdit : AppCompatActivity() {
         }
         btntoggleIsSoldOut.check(if (postIsSoldOut) R.id.btnSoldOut else R.id.btnForSale)
 
-        imgProduct.setOnClickListener {
+        cardImage.setOnClickListener {
             openGallery()
         }
     }
@@ -112,10 +136,37 @@ class ActivityPostEdit : AppCompatActivity() {
         return when (item.itemId) {
             android.R.id.home -> {
                 if(!isUpdating)
-                    finish()
+                    finishEdit()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun editTextOnTextChangedAndFocus() {
+        editTitle.clearErrorOnTextChangedAndFocus(inputTitle)
+        editContent.clearErrorOnTextChangedAndFocus(inputContent)
+        editPrice.clearErrorOnTextChangedAndFocus(inputPrice)
+    }
+
+    private fun isValidInput(title: String, content: String, price: String): Boolean {
+        inputTitle.error = if (title.trim().isEmpty()) getString(R.string.str_postedit_input_title) else null
+        inputContent.error = if (content.trim().isEmpty()) getString(R.string.str_postedit_input_content) else null
+        inputPrice.error = if (price.trim().isEmpty()) getString(R.string.str_postedit_input_price) else null
+
+        return inputTitle.error == null && inputContent.error == null && inputPrice.error == null
+    }
+
+    private fun finishEdit() {
+        if(!isUpdating) {
+            CustomDialog(getString(R.string.str_postedit_cancel_edit),
+                onConfirm = {
+                    finish()
+                },
+                onCancel = {}
+            ).show(supportFragmentManager, "CustomDialog")
+        } else {
+            Toast.makeText(this, getString(R.string.str_postedit_is_editing), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -130,16 +181,16 @@ class ActivityPostEdit : AppCompatActivity() {
         )
 
         postID?.let {
-            firebaseDB.collection("board_test").document(it).update(postMap as Map<String, Any>)
+            firebaseDB.collection("board").document(it).update(postMap as Map<String, Any>)
                 .addOnSuccessListener {
                     isUpdating = false
                     progressIndicator.visibility = View.GONE
-                    Toast.makeText(this, "게시글을 수정했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.str_postedit_edit_success), Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener {
                     progressIndicator.visibility = View.GONE
-                    Toast.makeText(this, "게시글 수정에 실패했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.str_postedit_edit_failed), Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -166,6 +217,9 @@ class ActivityPostEdit : AppCompatActivity() {
                         changedImageURI = downloadUri.toString()
                         updatePost()
                     }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, getString(R.string.str_postedit_image_upload_failed), Toast.LENGTH_SHORT).show()
                 }
         } else {
             changedImageURI = postImage

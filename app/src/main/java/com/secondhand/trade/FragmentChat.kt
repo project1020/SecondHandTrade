@@ -36,12 +36,11 @@ class FragmentChat : Fragment() {
     private lateinit var mainActivity: ActivityMain
 
     private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
+    private val currentUserID by lazy { Firebase.auth.currentUser?.uid }
 
     private val swipeChat by lazy { binding.swipeChat }
     private val recyclerChat by lazy { binding.recyclerChat }
     private val txtNoMessage by lazy { binding.txtNoMessage }
-
-    private val currentUserUID by lazy { Firebase.auth.currentUser?.uid }
 
     private lateinit var chatAdapter: AdapterChat
 
@@ -55,16 +54,9 @@ class FragmentChat : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        swipeChat.apply {
-            setColorSchemeResources(R.color.colorPrimary)
-            setOnRefreshListener {
-                chatAdapter.itemList.clear()
-                initItemList()
-            }
-        }
-
         initRecyclerView()
         initItemList()
+
         return binding.root
     }
 
@@ -92,10 +84,18 @@ class FragmentChat : Fragment() {
             })
         }
 
-        chatAdapter.setOnItemClickListener { item, position ->
-            val itemView = binding.recyclerChat.findViewHolderForAdapterPosition(position)?.itemView
+        swipeChat.apply {
+            setColorSchemeResources(R.color.colorPrimary)
+            setOnRefreshListener {
+                chatAdapter.itemList.clear()
+                initItemList()
+            }
+        }
 
-            val imgProfile = itemView?.findViewById<ImageView>(R.id.imgProfile) // R.id.imgProfile는 실제 뷰의 ID로 변경해야 함
+        chatAdapter.setOnItemClickListener { item, position ->
+            val itemView = recyclerChat.findViewHolderForAdapterPosition(position)?.itemView
+
+            val imgProfile = itemView?.findViewById<ImageView>(R.id.imgProfile)
             val txtMessage = itemView?.findViewById<TextView>(R.id.txtMessage)
             val txtDate = itemView?.findViewById<TextView>(R.id.txtDate)
             val txtNickname = itemView?.findViewById<TextView>(R.id.txtNickname)
@@ -120,7 +120,7 @@ class FragmentChat : Fragment() {
         swipeChat.isRefreshing = true
         isLastPage = false
 
-        currentUserUID?.let { userID ->
+        currentUserID?.let { userID ->
             firebaseDB.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).limit(10).get().addOnSuccessListener { documents ->
                 val itemList = mutableListOf<DataChat>()
                 val tasks = mutableListOf<Task<DocumentSnapshot>>()
@@ -172,7 +172,7 @@ class FragmentChat : Fragment() {
         chatAdapter.setLoading(true)
 
         lastItem?.let { documentSnapshot ->
-            currentUserUID?.let { userID ->
+            currentUserID?.let { userID ->
                 firebaseDB.collection("chats").document(userID).collection("receivedmessage").orderBy("date", Query.Direction.DESCENDING).startAfter(documentSnapshot).limit(10).get().addOnSuccessListener { documents ->
                     val itemList = mutableListOf<DataChat>()
                     val startPosition = chatAdapter.itemList.size

@@ -19,6 +19,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.secondhand.trade.FunComp.Companion.clearErrorOnTextChangedAndFocus
 import com.secondhand.trade.FunComp.Companion.formatEdittext
 import com.secondhand.trade.databinding.ActivityPostRegisterBinding
 import java.util.Date
@@ -38,6 +39,11 @@ class ActivityPostRegister : AppCompatActivity() {
     private val cardImage by lazy { binding.cardImage }
     private val imgAdd by lazy { binding.imgAdd }
     private val imgEdit by lazy { binding.imgEdit }
+    private val inputTitle by lazy { binding.inputTitle }
+    private val inputContent by lazy { binding.inputContent }
+    private val inputPrice by lazy { binding.inputPrice }
+    private val txtError by lazy { binding.txtError }
+    private val toolbarRegister by lazy { binding.toolbarRegister }
     private val progressIndicator by lazy { binding.progressRegister }
 
     private var imageURI: Uri? = null
@@ -45,10 +51,10 @@ class ActivityPostRegister : AppCompatActivity() {
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
+    // 업로드 하는 중에는 뒤로가기 방지
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if(!isUpdating)
-                finish()
+            finishRegister()
         }
     }
 
@@ -57,27 +63,6 @@ class ActivityPostRegister : AppCompatActivity() {
         setContentView(binding.root)
 
         onBackPressedDispatcher.addCallback(this, callback)
-
-        binding.toolbarRegister.apply {
-            setSupportActionBar(this)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        }
-
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_postregister_toolbar_item, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when (menuItem.itemId) {
-                    R.id.menuRegister -> {
-                        uploadImage()
-                    }
-                }
-                return true
-            }
-        })
 
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK && it.data != null) {
@@ -88,9 +73,48 @@ class ActivityPostRegister : AppCompatActivity() {
             }
         }
 
+        initToolbar()
+        initMenu()
+        initWidget()
+        editTextOnTextChangedAndFocus()
+    }
+
+    private fun initToolbar() {
+        toolbarRegister.apply {
+            setSupportActionBar(this)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        }
+    }
+
+    private fun initMenu() {
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_postregister_toolbar_item, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.menuRegister -> {
+                        val title = editTitle.text.toString()
+                        val content = editContent.text.toString()
+                        val price = editPrice.text.toString().replace(",", "")
+
+                        if (isValidInput(imageURI, title, content, price)) {
+                            uploadImage()
+                        }
+                    }
+                }
+                return true
+            }
+        })
+    }
+
+    private fun initWidget() {
         editPrice.apply { formatEdittext(this) }
 
         cardImage.setOnClickListener {
+            txtError.visibility = View.GONE
             openGallery()
         }
     }
@@ -98,11 +122,38 @@ class ActivityPostRegister : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                if(!isUpdating)
-                    finish()
+                finishRegister()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun editTextOnTextChangedAndFocus() {
+        editTitle.clearErrorOnTextChangedAndFocus(inputTitle)
+        editContent.clearErrorOnTextChangedAndFocus(inputContent)
+        editPrice.clearErrorOnTextChangedAndFocus(inputPrice)
+    }
+
+    private fun isValidInput(uri: Uri?, title: String, content: String, price: String): Boolean {
+        txtError.visibility = if (uri == null) View.VISIBLE else View.GONE
+        inputTitle.error = if (title.trim().isEmpty()) getString(R.string.str_postedit_input_title) else null
+        inputContent.error = if (content.trim().isEmpty()) getString(R.string.str_postedit_input_content) else null
+        inputPrice.error = if (price.trim().isEmpty()) getString(R.string.str_postedit_input_price) else null
+
+        return uri != null && inputTitle.error == null && inputContent.error == null && inputPrice.error == null
+    }
+
+    private fun finishRegister() {
+        if(!isUpdating) {
+            CustomDialog(getString(R.string.str_postregister_cancel_register),
+                onConfirm = {
+                    finish()
+                },
+                onCancel = {}
+            ).show(supportFragmentManager, "CustomDialog")
+        } else {
+            Toast.makeText(this, getString(R.string.str_postregister_is_registering), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -117,16 +168,16 @@ class ActivityPostRegister : AppCompatActivity() {
             "userID" to currentUserID
         )
 
-        firebaseDB.collection("board_test").add(postMap)
+        firebaseDB.collection("board").add(postMap)
             .addOnSuccessListener {
                 isUpdating = false
                 progressIndicator.visibility = View.GONE
-                Toast.makeText(this, "물품을 등록했습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.str_postregister_register_success), Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener {
                 progressIndicator.visibility = View.GONE
-                Toast.makeText(this, "물품 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.str_postregister_register_failed), Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -151,6 +202,9 @@ class ActivityPostRegister : AppCompatActivity() {
                         imageURI = downloadUri
                         registerPost()
                     }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, getString(R.string.str_postregister_image_upload_failed), Toast.LENGTH_SHORT).show()
                 }
         }
     }

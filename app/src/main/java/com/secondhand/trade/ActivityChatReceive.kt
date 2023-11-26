@@ -4,7 +4,7 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
+import com.secondhand.trade.FunComp.Companion.transitionWithGlide
 import com.secondhand.trade.databinding.ActivityChatReceiveBinding
 
 class ActivityChatReceive : AppCompatActivity() {
@@ -31,7 +31,11 @@ class ActivityChatReceive : AppCompatActivity() {
     }
 
     private fun initView() {
-        Glide.with(this).load(profileImage).into(imgProfile)
+        supportPostponeEnterTransition()
+        imgProfile.transitionWithGlide(this, profileImage) {
+            supportStartPostponedEnterTransition()
+        }
+
         txtTitle.text = chatTitle
         txtMessage.text = chatMessage
         txtDate.text = chatDate

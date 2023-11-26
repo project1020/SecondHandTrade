@@ -16,51 +16,58 @@ import com.secondhand.trade.databinding.FragmentMyinfoBinding
 
 class FragmentMyInfo : Fragment() {
     private val binding by lazy { FragmentMyinfoBinding.inflate(layoutInflater) }
-    private val db = FirebaseFirestore.getInstance()
-
     private lateinit var mainActivity: ActivityMain
+
+    private val firebaseDB by lazy { FirebaseFirestore.getInstance() }
+    private val currentUser by lazy { Firebase.auth.currentUser }
+
+    private val imgProfile by lazy { binding.imgProfile }
+    private val txtNickname by lazy { binding.txtNickname }
+    private val txtEmail by lazy { binding.txtEmail }
+    private val txtBirth by lazy { binding.txtBirth }
+    private val btnLogout by lazy { binding.btnLogout }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mainActivity = context as ActivityMain
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        initProfile()
+        initWidget()
 
-        // 로그아웃 버튼 클릭
-        binding.btnLogout.setOnClickListener {
-            // FunComp 클래스의 로그아웃 함수 실행
+        return binding.root
+    }
+
+    private fun initWidget() {
+        currentUser?.let { user ->
+            val userId = user.uid
+            getNickname(userId) {
+                Glide.with(mainActivity).load(it.first).into(imgProfile)
+                txtNickname.text = it.second
+                txtEmail.text = user.email
+                txtBirth.text = it.third
+            }
+        }
+
+        btnLogout.setOnClickListener {
             logout(mainActivity,
                 onLogoutSuccess = {
                     startActivity(Intent(mainActivity, ActivityLogin::class.java)).also { mainActivity.finish() }
                 }
             )
         }
-        return binding.root
-    }
-
-    // 프로필 표시 함수
-    private fun initProfile() {
-        Firebase.auth.currentUser?.let { user ->
-            val userId = user.uid
-            getNickname(userId) {
-                Glide.with(mainActivity).load(it.first).into(binding.imgProfile)
-                binding.txtNickname.text =  it.second
-                binding.txtEmail.text = user.email
-                binding.txtBirth.text = it.third
-            }
-        }
     }
 
     // Firestore에서 현재 로그인 되어있는 유저 정보 가져오는 함수
     private fun getNickname(userId: String, onComplete: (Triple<String?, String?, String?>) -> Unit) {
-        db.collection("users").document(userId).get()
+        firebaseDB.collection("users").document(userId).get()
             .addOnSuccessListener { task ->
                 val nickname = task.getString("nickname")
                 val profileImage = task.getString("profileImage")
                 val birth = task.getString("birth")
                 onComplete(Triple(profileImage, nickname, birth))
-            }.addOnFailureListener {
+            }
+            .addOnFailureListener {
                 onComplete(Triple(null, null, null))
             }
     }

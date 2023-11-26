@@ -5,6 +5,43 @@
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - Class - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- ActivityChatSend -->
+    <string name="str_chatsend_input_message">내용을 입력해주세요.</string>
+    <string name="str_chatsend_send_success">판매자에게 쪽지를 보냈습니다.</string>
+    <string name="str_chatsend_send_failed">쪽지를 보내지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <!-- ActivityLogin -->
+    <string name="str_login_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
+    <string name="str_login_already_loggedin">이미 로그인 중인 기기가 있습니다.</string>
+    <string name="str_login_check_email">이메일을 확인해 주세요.</string>
+    <string name="str_login_check_password">비밀번호를 확인해 주세요.</string>
+    <string name="str_login_invalid_email">이메일 형식이 올바르지 않습니다.</string>
+    <string name="str_login_login_failed">로그인에 실패했습니다. 잠시 후 다시 시도해주세요.</string>
+    <!-- ActivityMain -->
+    <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
+    <!-- ActivityPost -->
+    <string name="str_post_price_won">%s원</string>
+    <string name="str_post_for_sale">거래가능</string>
+    <string name="str_post_sold_out">거래완료</string>
+    <string name="str_post_get_post_failed">게시글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="str_post_get_user_failed">유저 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <!-- ActivityPostEdit -->
+    <string name="str_postedit_input_title">제목을 입력해 주세요.</string>
+    <string name="str_postedit_input_content">내용을 입력해 주세요.</string>
+    <string name="str_postedit_input_price">가격을 입력해 주세요.</string>
+    <string name="str_postedit_cancel_edit">게시글 수정을 취소하시겠습니까?</string>
+    <string name="str_postedit_is_editing">게시글을 수정 중이니 잠시만 기다려주세요.</string>
+    <string name="str_postedit_edit_success">게시글을 수정했습니다.</string>
+    <string name="str_postedit_edit_failed">게시글 수정을 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="str_postedit_image_upload_failed">이미지 업로드를 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <!-- ActivityPostRegister -->
+    <string name="str_postregister_input_title">제목을 입력해 주세요.</string>
+    <string name="str_postregister_input_content">내용을 입력해 주세요.</string>
+    <string name="str_postregister_input_price">가격을 입력해 주세요.</string>
+    <string name="str_postregister_cancel_register">물품 등록을 취소하시겠습니까?</string>
+    <string name="str_postregister_is_registering">물품을 등록 중이니 잠시만 기다려주세요.</string>
+    <string name="str_postregister_register_success">물품을 등록했습니다.</string>
+    <string name="str_postregister_register_failed">물품 등록을 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="str_postregister_image_upload_failed">이미지 업로드를 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
     <!-- ActivityRegister -->
     <string name="str_register_input_nickname">닉네임을 입력해 주세요.</string>
     <string name="str_register_input_birth">생년월일을 입력해 주세요.</string>
@@ -13,20 +50,26 @@
     <string name="str_register_check_space">공백을 확인해 주세요.</string>
     <string name="str_register_special_characters">특수문자는 사용이 불가능합니다.</string>
     <string name="str_register_password_different">비밀번호가 일치하지 않습니다.</string>
-    <string name="str_register_register_success">회원가입에 성공하였습니다!</string>
-    <string name="str_register_register_fail">회원가입에 실패하였습니다. 다시 시도해주세요.</string>
+    <string name="str_register_register_success">회원가입에 성공했습니다!</string>
+    <string name="str_register_register_fail">회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.</string>
     <string name="str_register_exist_account">이미 존재하는 계정입니다.</string>
     <string name="str_register_exist_nickname">이미 사용 중인 닉네임입니다.</string>
     <string name="str_register_invalid_email">이메일 형식이 올바르지 않습니다.</string>
     <string name="str_register_invalid_password">비밀번호는 6자리 이상이어야 합니다.</string>
-    <!-- ActivityPost -->
-    <string name="str_post_price_won">%s원</string>
-    <string name="str_post_for_sale">거래가능</string>
-    <string name="str_post_sold_out">거래완료</string>
+    <!-- AdapterHome -->
+    <string name="str_adapterhome_price_won">%s원</string>
+    <!-- FragmentHome -->
+    <string name="str_home_search_product">물품 검색</string>
+    <string name="str_home_get_board_failed">물품 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <!-- FunComp -->
+    <string name="str_funcomp_logout_failed">로그아웃 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</string>
 
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - Layout - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- activity_chat_send -->
+    <string name="str_chat_edit_message">내용 입력</string>
+    <string name="str_chat_btn_send">쪽지 보내기</string>
     <!-- activity_login -->
     <string name="str_login_edit_email">이메일</string>
     <string name="str_login_edit_password">비밀번호</string>
@@ -34,26 +77,9 @@
     <string name="str_login_btn_login">로그인</string>
     <string name="str_login_txt_account">계정이 없으신가요?</string>
     <string name="str_login_txt_register"><u>회원가입</u></string>
-    <!-- activity_register -->
-    <string name="str_register_edit_nickname">닉네임</string>
-    <string name="str_register_edit_birth">생년월일</string>
-    <string name="str_register_edit_email">이메일</string>
-    <string name="str_register_edit_password">비밀번호</string>
-    <string name="str_register_edit_password_confirm">비밀번호 확인</string>
-    <string name="str_register_btn_register">회원가입</string>
-    <string name="str_register_txt_account">이미 계정이 있으신가요?</string>
-    <string name="str_register_txt_login"><u>로그인</u></string>
     <!-- activity_post -->
     <string name="str_post_btn_edit">수정하기</string>
     <string name="str_post_btn_chat">쪽지 보내기</string>
-    <!-- activity_post_register -->
-    <string name="str_postregister_toolbar_title">물품 등록</string>
-    <string name="str_postregister_txt_title">제목</string>
-    <string name="str_postregister_edit_title">제목을 입력해주세요.</string>
-    <string name="str_postregister_txt_content">내용</string>
-    <string name="str_postregister_edit_content">내용을 입력해주세요.</string>
-    <string name="str_postregister_txt_price">가격</string>
-    <string name="str_postregister_edit_price">가격을 입력해주세요.</string>
     <!-- activity_post_edit -->
     <string name="str_postedit_toolbar_title">게시글 수정</string>
     <string name="str_postedit_txt_title">제목</string>
@@ -65,9 +91,37 @@
     <string name="str_postedit_txt_issoldout">판매 여부</string>
     <string name="str_postedit_btn_forsale">판매 중</string>
     <string name="str_postedit_btn_soldout">판매 완료</string>
-    <!-- activity_chat -->
-    <string name="str_chat_edit_message">내용 입력</string>
-    <string name="str_chat_btn_send">쪽지 보내기</string>
+    <!-- activity_post_register -->
+    <string name="str_postregister_txt_error">이미지를 등록해 주세요.</string>
+    <string name="str_postregister_toolbar_title">물품 등록</string>
+    <string name="str_postregister_txt_title">제목</string>
+    <string name="str_postregister_edit_title">제목을 입력해주세요.</string>
+    <string name="str_postregister_txt_content">내용</string>
+    <string name="str_postregister_edit_content">내용을 입력해주세요.</string>
+    <string name="str_postregister_txt_price">가격</string>
+    <string name="str_postregister_edit_price">가격을 입력해주세요.</string>
+    <!-- activity_register -->
+    <string name="str_register_edit_nickname">닉네임</string>
+    <string name="str_register_edit_birth">생년월일</string>
+    <string name="str_register_edit_email">이메일</string>
+    <string name="str_register_edit_password">비밀번호</string>
+    <string name="str_register_edit_password_confirm">비밀번호 확인</string>
+    <string name="str_register_btn_register">회원가입</string>
+    <string name="str_register_txt_account">이미 계정이 있으신가요?</string>
+    <string name="str_register_txt_login"><u>로그인</u></string>
+    <!-- bottomsheet_register -->
+    <string name="str_register_text_choose">프로필 캐릭터 선택</string>
+    <!-- custom_dialog -->
+    <string name="str_customdialog_btn_cancel">취소</string>
+    <string name="str_customdialog_btn_confirm">확인</string>
+    <!-- dialog_home -->
+    <string name="str_dialoghome_txt_forsale">판매 여부</string>
+    <string name="str_dialoghome_txt_error">판매 여부를 선택해 주세요.</string>
+    <string name="str_dialoghome_tgbtn_forsale">판매 중</string>
+    <string name="str_dialoghome_tgbtn_soldout">판매 완료</string>
+    <string name="str_dialoghome_btn_cancel">취소</string>
+    <string name="str_dialoghome_btn_apply">적용</string>
+    <!-- fragment_chat -->
     <string name="str_chat_txt_nomessage">받은 쪽지가 없습니다.</string>
     <!-- fragment_home -->
     <string name="str_home_toolbar_title">중고거래</string>
@@ -77,15 +131,6 @@
     <string name="str_myinfo_txt_email">이메일</string>
     <string name="str_myinfo_txt_birth">생년월일</string>
     <string name="str_myinfo_btn_logout">로그아웃</string>
-    <!-- bottomsheet_register -->
-    <string name="str_register_text_choose">프로필 캐릭터 선택</string>
-    <!-- dialog_home -->
-    <string name="str_home_txt_forsale">판매 여부</string>
-    <string name="str_home_txt_warning">판매 여부를 선택해 주세요.</string>
-    <string name="str_home_tgbtn_forsale">판매 중</string>
-    <string name="str_home_tgbtn_soldout">판매 완료</string>
-    <string name="str_home_btn_cancel">취소</string>
-    <string name="str_home_btn_apply">적용</string>
 
 
 
