@@ -37,7 +37,7 @@
 ### 로그인 및 회원가입
 <p float="left">
   <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/db7b8a27-f2b4-4859-abd8-58091c85df41" width="30%" />
-  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/39df7008-60b6-4d15-bd24-76bc859a62f9" width="30%" />
+  <img src="https://github.com/project1020/SecondHandTrade/assets/148557775/e0e237ea-fecd-4968-90ea-12c0913b2a89" width="30%" />
 </p></br>
 
 ### 메인화면
