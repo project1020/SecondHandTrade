@@ -1,6 +1,5 @@
 package com.secondhand.trade
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -10,7 +9,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -20,7 +18,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -31,20 +28,13 @@ import java.util.concurrent.TimeUnit
 class FunComp {
     companion object {
         // 로그아웃 함수
-        fun logout(activity: Activity, onLogoutSuccess: (() -> Unit)? = null, onLogoutFailed: (() -> Unit)? = null) {
-            val userId = Firebase.auth.currentUser?.uid
+        private val firebaseAuth by lazy { Firebase.auth }
+        fun logout(onLogoutSuccess: (() -> Unit)? = null) {
+            val userId = firebaseAuth.currentUser?.uid
             if (userId != null) {
-                // 로그인 상태를 false로 변경
-                FirebaseFirestore.getInstance().collection("users").document(userId).update("isLoggedIn", false)
-                    .addOnSuccessListener { // isLoggedIn 상태 변경 성공
-                        Firebase.auth.signOut()
-                        Preferences.isAutoLogin = false
-                        onLogoutSuccess?.invoke()
-                    }
-                    .addOnFailureListener { // isLoggedIn 상태 변경 실패
-                        Toast.makeText(activity, activity.getString(R.string.str_funcomp_logout_failed), Toast.LENGTH_SHORT).show()
-                        onLogoutFailed?.invoke()
-                    }
+                firebaseAuth.signOut()
+                Preferences.isAutoLogin = false
+                onLogoutSuccess?.invoke()
             }
         }
 

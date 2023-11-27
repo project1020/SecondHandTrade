@@ -57,7 +57,7 @@ class ActivityMain : AppCompatActivity() {
         super.onDestroy()
         // 자동 로그인 상태가 아닐 시 종료하면 로그아웃
         if (!Preferences.isAutoLogin) {
-            logout(this)
+            logout()
         }
     }
 
