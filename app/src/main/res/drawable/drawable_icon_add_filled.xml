@@ -3,7 +3,7 @@
     <item
         android:drawable="@drawable/icon_add_filled"
         android:gravity="bottom|end"
-        android:right="10dp"
-        android:bottom="10dp">
+        android:right="6dp"
+        android:bottom="6dp">
     </item>
 </layer-list>
