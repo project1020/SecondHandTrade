@@ -50,8 +50,7 @@ class FragmentMyInfo : Fragment() {
         }
 
         btnLogout.setOnClickListener {
-            logout(mainActivity,
-                onLogoutSuccess = {
+            logout(onLogoutSuccess = {
                     startActivity(Intent(mainActivity, ActivityLogin::class.java)).also { mainActivity.finish() }
                 }
             )
